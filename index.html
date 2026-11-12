@@ -84,7 +84,7 @@ select{width:100%;font:inherit;font-size:12px;color:var(--tx);background:var(--b
 
 <div class="c"><h2>시설물 정보</h2><div class="g" id="info"></div></div>
 
-<div class="c"><h2>사진대지</h2><div class="sub" id="sheetinfo"></div><div class="sheet" id="sheet" style="margin-top:8px"></div></div>
+<div class="c"><h2>사진대지</h2><div class="sub" id="sheetinfo"></div><label class="b" style="display:block;margin-top:8px;cursor:pointer">🖼 앨범에서 여러 장 한 번에 넣기<input type="file" accept="image/*" multiple id="albm" style="display:none"></label><div class="sheet" id="sheet" style="margin-top:8px"></div></div>
 <div id="items"></div>
 
 <div class="c"><h2>평가결과</h2>
@@ -202,6 +202,9 @@ function openS(s){S=fixS(s);PDF=null;$("pdfb").textContent="PDF 만들기";rende
 async function openB(id){var r=await dbGet(id);if(r)openS(r)}
 function dl(b,n){var u=URL.createObjectURL(b),a=document.createElement("a");a.href=u;a.download=n;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(u)},5000)}
 function initOnce(){fillSum();
+ $("albm").onchange=async function(){var fs=Array.prototype.slice.call(this.files);this.value="";var n=0,skip=0;
+  for(var i=0;i<fs.length;i++){var k=S.ph.indexOf(null);if(k<0){skip=fs.length-i;break}var u=await shr(fs[i]);S.ph[k]={d:u,date:fdate(fs[i])};n++}
+  save();renderSlots();if(skip)alert("빈 칸이 부족해서 "+skip+"장은 넣지 못했습니다. (사진대지는 최대 10칸)")};
  $("sum").oninput=function(){S.sum=this.value;save()};
  $("t1").oninput=function(){S.t1=+this.value;save();renderRes()};$("t2").oninput=function(){S.t2=+this.value;save();renderRes()};
  $("back").onclick=function(){showList()};
@@ -224,8 +227,11 @@ async function boot(){try{await dbo()}catch(e){LS=true}
 function init(){boot()}
 var NT=["건축물 전경","지반침하 조사","육안조사 현황"];
 function td(){var d=new Date();return d.getFullYear()+". "+("0"+(d.getMonth()+1)).slice(-2)+". "+("0"+d.getDate()).slice(-2)}
+function fdate(f){var d=f.lastModified?new Date(f.lastModified):null;if(!d||isNaN(d)||d>new Date())return td();return d.getFullYear()+". "+("0"+(d.getMonth()+1)).slice(-2)+". "+("0"+d.getDate()).slice(-2)}
+function shr(f){return new Promise(function(r){shrink(f,r)})}
 function renderSlots(){var h="";for(var n=0;n<10;n++){var p=S.ph[n];
  h+='<figure><label class="slot"><input type="file" accept="image/*" capture="environment" data-s="'+n+'"><b>사진대지-'+(n+1)+'</b><div class="thumb">'+(p?'<img src="'+p.d+'" alt="사진대지-'+(n+1)+'">':'📷 눌러서 촬영')+'</div></label>';
+ h+='<label class="b" style="display:block;margin-top:4px;padding:5px;font-size:12px;cursor:pointer">🖼 앨범에서 선택<input type="file" accept="image/*" data-a="'+n+'" style="display:none"></label>';
  h+='<label>촬영일자</label><input data-sk="'+n+'" value="'+(p?esc(p.date):"")+'" placeholder="촬영 시 자동 입력"'+(p?'':' disabled')+'>';
  h+='<label>과업명</label><div>3종 시설물 실태조사</div>';
  h+='<label>촬영내용</label><select data-sn="'+n+'"><option value="">선택</option>'+NT.map(function(t){return'<option'+(S.nt[n]===t?' selected':'')+'>'+t+'</option>'}).join("")+'</select>';
@@ -233,8 +239,8 @@ function renderSlots(){var h="";for(var n=0;n<10;n++){var p=S.ph[n];
  $("sheet").innerHTML=h;$("sheetinfo").textContent="촬영 "+S.ph.filter(Boolean).length+" / 10 · 칸을 누르면 촬영, 다시 누르면 재촬영";
  $("sheet").onchange=function(e){var d=e.target.dataset;
   if(d.sn!==undefined){S.nt[+d.sn]=e.target.value;save();return}
-  if(d.s===undefined||!e.target.files[0])return;
-  shrink(e.target.files[0],function(u){S.ph[+d.s]={d:u,date:td()};save();renderSlots()})};
+  var ix=d.s!==undefined?d.s:d.a,fl=e.target.files[0];if(ix===undefined||!fl)return;
+  shrink(fl,function(u){S.ph[+ix]={d:u,date:d.a!==undefined?fdate(fl):td()};save();renderSlots()})};
  $("sheet").oninput=function(e){var d=e.target.dataset;if(d.sk===undefined||!S.ph[+d.sk])return;S.ph[+d.sk].date=e.target.value;save()};
  $("sheet").onclick=function(e){var t=e.target.closest("button");if(t&&t.dataset.sdel!==undefined){S.ph[+t.dataset.sdel]=null;save();renderSlots()}}}
 function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;")}
