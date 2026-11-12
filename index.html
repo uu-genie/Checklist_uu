@@ -75,6 +75,7 @@ select{width:100%;font:inherit;font-size:12px;color:var(--tx);background:var(--b
 <div id="list" class="w"><h1>3종시설물 실태조사</h1><div class="sub">건물별로 자동 저장됩니다. 건물을 눌러 이어서 수정할 수 있습니다.</div>
 <div class="row"><button class="b" id="newb">＋ 새 건물</button></div>
 <div id="lst"></div>
+<div class="c"><h2>저장 공간</h2><div class="sub" id="stg">확인 중…</div><div class="row"><button class="b" id="perb" style="flex:0 0 auto;padding:6px 12px;font-size:13px">자동 삭제 방지 요청</button></div></div>
 <div class="c"><h2>백업</h2><div class="sub">폰을 바꾸거나 브라우저 데이터를 지우기 전에 파일로 저장해 두세요.</div>
 <div class="row"><button class="b" id="expb">전체 백업 만들기</button><label class="b" style="cursor:pointer">백업 불러오기<input type="file" accept=".json,application/json" id="impf" style="display:none"></label></div><div class="sub" id="bmsg"></div></div>
 </div>
@@ -197,11 +198,18 @@ function save(){PDF=null;var pb=$("pdfb");if(pb)pb.textContent="PDF 만들기";d
 function view(v){$("list").style.display=v==="list"?"":"none";$("edit").style.display=v==="edit"?"":"none";$("bar").style.display=v==="edit"?"":"none"}
 async function showList(){await flush();S=null;BK=null;$("expb").textContent="전체 백업 만들기";var a=await dbAll();a.sort(function(x,y){return y.upd-x.upd});
  $("lst").innerHTML=a.length?a.map(function(m){return'<div class="c"><div data-o="'+m.id+'" style="cursor:pointer"><div class="it">'+esc((m.no?m.no+" · ":"")+(m.name||"(이름 없음)"))+'</div><div class="sub">'+esc(m.date||"")+' · 사진 '+m.ph+'/10'+(m.sc!==null&&m.sc!==undefined?' · '+m.sc.toFixed(2)+'점 '+esc(m.st):' · 미평가')+'</div></div><div class="row"><button class="b" data-o="'+m.id+'">열기</button><button class="b" data-cp="'+m.id+'">복제</button><button class="b" data-dl="'+m.id+'">삭제</button></div></div>'}).join(""):'<div class="c sub">저장된 건물이 없습니다. “＋ 새 건물”을 눌러 시작하세요.</div>';
- view("list");window.scrollTo(0,0)}
+ view("list");window.scrollTo(0,0);stgInfo(a.length)}
 function openS(s){S=fixS(s);PDF=null;$("pdfb").textContent="PDF 만들기";renderInfo();renderItems();renderRes();$("sum").value=S.sum;$("sumsel").selectedIndex=0;$("t1").value=S.t1;$("t2").value=S.t2;$("ttl").textContent=ttl();view("edit");window.scrollTo(0,0)}
 async function openB(id){var r=await dbGet(id);if(r)openS(r)}
 function dl(b,n){var u=URL.createObjectURL(b),a=document.createElement("a");a.href=u;a.download=n;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(u)},5000)}
+var SN=0;
+function stgInfo(n){if(n!==undefined)SN=n;var el=$("stg");if(!navigator.storage||!navigator.storage.estimate){el.textContent="건물 "+SN+"건 · 이 브라우저는 저장 공간 정보를 제공하지 않습니다.";return}
+ navigator.storage.estimate().then(function(e){var u=e.usage||0,q=e.quota||0,mb=function(v){return(v/1048576).toFixed(v<10485760?1:0)},pc=q?u/q*100:0;
+  var t="건물 "+SN+"건 · 사용 "+mb(u)+"MB"+(q?" / 허용 약 "+mb(q)+"MB ("+(pc<0.1?"0.1% 미만":pc.toFixed(1)+"%")+")":"");el.textContent=t;
+  if(navigator.storage.persisted)navigator.storage.persisted().then(function(p){el.textContent=t+" · 자동 삭제 방지: "+(p?"설정됨":"설정 안 됨")})
+ }).catch(function(){el.textContent="건물 "+SN+"건 · 저장 공간 정보를 읽지 못했습니다."})}
 function initOnce(){fillSum();
+ $("perb").onclick=function(){if(!navigator.storage||!navigator.storage.persist){alert("이 브라우저는 지원하지 않습니다. 백업을 자주 해 주세요.");return}navigator.storage.persist().then(function(r){alert(r?"삭제 방지가 설정되었습니다.":"브라우저가 허용하지 않았습니다. 백업을 자주 해 주세요.");stgInfo()})};
  $("albm").onchange=async function(){var fs=Array.prototype.slice.call(this.files);this.value="";var n=0,skip=0;
   for(var i=0;i<fs.length;i++){var k=S.ph.indexOf(null);if(k<0){skip=fs.length-i;break}var u=await shr(fs[i]);S.ph[k]={d:u,date:fdate(fs[i])};n++}
   save();renderSlots();if(skip)alert("빈 칸이 부족해서 "+skip+"장은 넣지 못했습니다. (사진대지는 최대 10칸)")};
