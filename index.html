@@ -16,7 +16,7 @@
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#111418;--card:#1b2026;--tx:#e8ebef;--sub:#9aa4af;--bd:#333b44;--pri:#5b9cf5;--priTx:#08111f;--ok:#4cc27d;--warn:#f0a73a;--bad:#ef6b6b}}
 *,*:before,*:after{box-sizing:inherit}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
-body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 -apple-system,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;padding-bottom:90px}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 -apple-system,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;padding-bottom:110px}
 .w{max-width:720px;margin:0 auto;padding:12px}
 h1{font-size:18px;margin:8px 0 2px}h2{font-size:15px;margin:0 0 8px}
 .sub{color:var(--sub);font-size:12px}
@@ -24,7 +24,7 @@ h1{font-size:18px;margin:8px 0 2px}h2{font-size:15px;margin:0 0 8px}
 .g{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 label{display:block;font-size:12px;color:var(--sub)}
 input,textarea{width:100%;font:inherit;color:var(--tx);background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:8px}
-textarea{min-height:64px;resize:vertical}
+textarea{min-height:110px;resize:vertical}
 .row{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
 .b{flex:1 1 0;min-width:48px;padding:10px 4px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font:inherit;text-align:center;cursor:pointer}
 .b small{display:block;color:var(--sub);font-size:11px}
@@ -37,27 +37,54 @@ textarea{min-height:64px;resize:vertical}
 .cam{display:inline-block;padding:10px 14px;border-radius:8px;background:var(--pri);color:var(--priTx);cursor:pointer;font-weight:600}
 .cam input{display:none}
 .it{font-weight:600}.tag{float:right;font-size:12px;padding:2px 8px;border-radius:10px;border:1px solid var(--bd);color:var(--sub)}
-#bar{position:fixed;left:0;right:0;bottom:0;padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));background:var(--card);border-top:1px solid var(--bd);display:flex;gap:10px;align-items:center;justify-content:center}
+#bar{flex-wrap:wrap;position:fixed;left:0;right:0;bottom:0;padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));background:var(--card);border-top:1px solid var(--bd);display:flex;gap:10px;align-items:center;justify-content:center}
 #bar b{font-size:18px}
 .res{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;align-items:center}
 .sc{font-size:28px;font-weight:700}
 .st{display:inline-block;padding:4px 14px;border-radius:14px;font-weight:700;color:#fff}
 .sheet{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+select{width:100%;font:inherit;font-size:12px;color:var(--tx);background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:6px}.sheet figure label{margin-top:4px}.sheet input:disabled{opacity:.5}
+.slot{display:block;cursor:pointer}.slot input{display:none}.thumb{aspect-ratio:4/3;border:2px dashed var(--bd);border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--sub);text-align:center;overflow:hidden;margin:4px 0}.sheet .thumb img{border-radius:0;width:100%;height:100%;aspect-ratio:auto}
 .sheet figure{margin:0;border:1px solid var(--bd);border-radius:8px;padding:6px;font-size:12px}
 .sheet img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:4px}
 .sheet input{padding:4px 6px;font-size:12px}
-#pr{display:none}
-@page{size:A4;margin:12mm}
-@media print{.w,#bar{display:none!important}body{background:#fff;color:#000;padding:0}#pr{display:block;color:#000;background:#fff;font-size:10pt}#pr h3{font-size:15pt;margin:0 0 4px}#pr h4{font-size:12pt;margin:0 0 6px}#pr table{width:100%;border-collapse:collapse;table-layout:fixed;margin-bottom:0}#pr th,#pr td{border:1px solid #000;padding:3px 4px;text-align:center;vertical-align:middle;word-break:keep-all;font-weight:normal}#pr th{background:#e6e6e6;font-weight:bold}#pr td.l{text-align:left;font-size:9pt}#pr .pg{page-break-after:always}#pr .pg:last-child{page-break-after:auto}#pr .ph2 td{width:50%;height:78mm;text-align:left;vertical-align:top;padding:4px}#pr .ph2 img{width:100%;height:56mm;object-fit:contain;display:block;margin:3px 0}}
+#pr{display:none;color:#000;background:#fff;font-size:8.5pt;line-height:1.3;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+@page{size:A4;margin:10mm 12mm}
+#pr h3{font-size:14pt;margin:0 0 2mm}#pr h4{font-size:11pt;margin:0 0 2mm}
+#pr table{width:100%;border-collapse:collapse;table-layout:fixed}
+#pr th,#pr td{border:1px solid #000;padding:1mm 1.2mm;text-align:center;vertical-align:middle;font-weight:normal;overflow-wrap:anywhere;word-break:keep-all}
+#pr th{background:#e6e6e6;font-weight:bold}
+#pr td.l{text-align:left}
+#pr .t2{margin-top:-1px}
+#pr .pg{box-sizing:border-box;height:276mm;break-after:page;page-break-after:always}#pr .pg:last-child{break-after:auto;page-break-after:auto}#pr .pg+.pg{break-before:page;page-break-before:always}
+#pr .pgrid{display:grid;grid-template-columns:1fr 1fr;border:2px solid #000}
+#pr .box{min-width:0}
+#pr .box:nth-child(odd){border-right:2px solid #000}
+#pr .box:nth-child(-n+4){border-bottom:2px solid #000}
+#pr .box td{font-size:9pt;height:6.5mm;padding:0 1mm}
+#pr .box tr:first-child td{border-top:0}
+#pr .box td:first-child{border-left:0}
+#pr .box td:last-child{border-right:0}
+#pr .box tr:last-child td{border-bottom:0}
+#pr .box td.pic{height:63mm;padding:0}
+#pr .box img{width:70mm;height:55mm;object-fit:contain;display:block;margin:0 auto}
+@media print{.w,#bar{display:none!important}body{background:#fff;color:#000;padding:0;margin:0}#pr{display:block}}
 </style>
 </head>
 <body>
-<div class="w">
-<h1>3종시설물 실태조사 체크리스트</h1>
-<div class="sub">입력 내용과 사진은 이 기기 브라우저에 자동 저장됩니다.</div>
+<div id="list" class="w"><h1>3종시설물 실태조사</h1><div class="sub">건물별로 자동 저장됩니다. 건물을 눌러 이어서 수정할 수 있습니다.</div>
+<div class="row"><button class="b" id="newb">＋ 새 건물</button></div>
+<div id="lst"></div>
+<div class="c"><h2>백업</h2><div class="sub">폰을 바꾸거나 브라우저 데이터를 지우기 전에 파일로 저장해 두세요.</div>
+<div class="row"><button class="b" id="expb">전체 백업 만들기</button><label class="b" style="cursor:pointer">백업 불러오기<input type="file" accept=".json,application/json" id="impf" style="display:none"></label></div><div class="sub" id="bmsg"></div></div>
+</div>
+<div class="w" id="edit" style="display:none">
+<div style="display:flex;gap:8px;align-items:center;margin-bottom:4px"><button class="b" id="back" style="flex:0 0 auto;padding:8px 12px">← 목록</button><div class="it" id="ttl" style="flex:1"></div></div>
+<div class="sub">입력 내용과 사진은 이 기기에 자동 저장됩니다.</div>
 
 <div class="c"><h2>시설물 정보</h2><div class="g" id="info"></div></div>
 
+<div class="c"><h2>사진대지</h2><div class="sub" id="sheetinfo"></div><div class="sheet" id="sheet" style="margin-top:8px"></div></div>
 <div id="items"></div>
 
 <div class="c"><h2>평가결과</h2>
@@ -67,50 +94,76 @@ textarea{min-height:64px;resize:vertical}
 </div>
 <div class="sub" id="basis" style="margin-top:6px"></div>
 <div id="opts"></div>
-<label style="margin-top:8px">종합의견 및 특기사항</label><textarea id="sum"></textarea>
+<label style="margin-top:8px">종합의견 및 특기사항</label><select id="sumsel"></select><textarea id="sum" style="margin-top:6px"></textarea>
 <details class="noprint" style="margin-top:8px"><summary class="sub">안전상태 판정 기준 (변경 가능)</summary>
 <div class="g" style="margin-top:6px"><div><label>양호 최소점수</label><input id="t1" type="number" step="0.01"></div><div><label>주의관찰 최소점수</label><input id="t2" type="number" step="0.01"></div></div>
 <div class="sub">초기값은 추정치입니다. 지침의 기준값으로 수정해 주세요.</div></details>
 </div>
 
-<div class="c"><h2>사진대지</h2><div class="sub" id="sheetinfo"></div><div class="sheet" id="sheet" style="margin-top:8px"></div></div>
 
-<div class="c noprint"><button class="b" id="reset">입력 전체 초기화</button></div>
+
+<div class="c noprint"><button class="b" id="reset">이 건물 삭제</button></div>
 </div>
 
 <div id="pr"></div>
-<div id="bar"><span>종합점수 <b id="s2">–</b></span><button class="b" style="flex:0 0 auto;padding:10px 16px" onclick="doPrint()">인쇄·PDF</button></div>
+<div id="bar" style="display:none"><span>종합점수 <b id="s2">–</b></span><button id="pdfb" class="b" style="flex:0 0 auto;padding:10px 14px" onclick="pdfBtn()">PDF 만들기</button><button id="prb" class="b" style="flex:0 0 auto;padding:10px 14px" onclick="doPrint('all')">인쇄</button></div>
 
 <script>
 var ITEMS=["시설물 주변의 지반 침하 또는 이로 인한 건물의 기울음, 균열 상태","구조부재의 균열, 누수 상태","구조부재의 변형(처짐, 기울음, 단면손실 등) 상태","구조부재의 철근 부식, 노출 또는 콘크리트 박리·박락 상태","철골부재의 접합부 상태 (볼트 풀림, 누락, 탈락, 용접불량)","철골부재의 변형(기울음, 좌굴 등) 상태","철골부재의 부식 또는 부재 미시공, 단면손실 상태"];
 var GR=[["a",10],["b",8],["c",5],["d",2],["e",0]];
-var INFO=[["번호","no",""],["시설물명","name",""],["조사일시","date",""],["구분(연면적)","area",""],["구조형식","struct",""],["관리주체","mgr",""],["연락처","tel",""],["주소","addr",""],["책임기술자 성명","en",""],["책임기술자 소속","eo",""],["책임기술자 연락처","et",""]];
+var INFO=[["보고서 장 번호 (예: 5.5)","chap","5.5"],["건물번호","no",""],["시설물명","name",""],["조사일시","date",""],["구분(연면적)","area",""],["구조형식","struct",""],["관리주체","mgr",""],["연락처","tel",""],["주소","addr",""],["책임기술자 성명","en",""],["책임기술자 소속","eo",""],["책임기술자 연락처","et",""]];
 var OPTS=[["긴급안전점검","필요","불필요"],["중대결함","있음","없음"],["정밀안전진단","필요","불필요"],["안전조치","필요","불필요"]];
 var today=new Date().toISOString().slice(0,10).replace(/-/g,".");
 var S=null,db=null,KEY="chk3";
-function blank(){var s={info:{},it:ITEMS.map(function(){return{g:null,fix:"X",op:"",ph:[]}}),opt:[1,1,1,1],sum:"",t1:8,t2:5};INFO.forEach(function(f){s.info[f[1]]=f[1]=="date"?today:f[2]});return s}
+function blank(){var s={info:{},it:ITEMS.map(function(){return{g:null,fix:"X",op:"",ph:[]}}),opt:[1,1,1,1],sum:"",t1:8,t2:5,ph:[null,null,null,null,null,null,null,null,null,null]};INFO.forEach(function(f){s.info[f[1]]=f[1]=="date"?today:(f[1]=="chap"?"5.5":"")});return s}
 function $(i){return document.getElementById(i)}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){var m=$("sheetinfo");m.textContent="저장 공간이 부족합니다. 사진 일부를 삭제해 주세요."}}
-function load(){try{var v=localStorage.getItem(KEY);S=v?JSON.parse(v):blank()}catch(e){S=blank()}}
+function load(){try{var v=localStorage.getItem(KEY);S=v?JSON.parse(v):blank()}catch(e){S=blank()}if(S.info.chap===undefined)S.info.chap="5.5";if(!S.ph)S.ph=[];while(S.ph.length<10)S.ph.push(null);if(!S.nt)S.nt=[];while(S.nt.length<10)S.nt.push("")}
 function calc(){var v=[];S.it.forEach(function(x){if(x.g!==null&&x.g!=="na")v.push(GR[x.g][1])});
  if(!v.length)return null;return v.reduce(function(a,b){return a+b},0)/v.length}
 function stateOf(sc){return sc>=S.t1?["양호","var(--ok)"]:sc>=S.t2?["주의관찰","var(--warn)"]:["지정검토","var(--bad)"]}
-function renderInfo(){var h="";INFO.forEach(function(f){h+='<div><label>'+f[0]+'</label><input data-k="'+f[1]+'" value="'+(S.info[f[1]]||"").replace(/"/g,"&quot;")+'"></div>'});
- $("info").innerHTML=h;$("info").oninput=function(e){S.info[e.target.dataset.k]=e.target.value;save()}}
+var SUMS=[
+["1. 문제점 없음 · 일부 균열/누수 (보수 바람직)","조사당일 외관상으로 보이는 문제점은 없으나, 건축물 일부 구조체에 균열 및 누수흔적이 조사되었으며 이는 내구성과 미관향상을 위해 보수를 하는 것이 바람직할 것으로 판단된다."],
+["2. 문제점 없음 · 전체적으로 양호","조사당일 외관상으로 보이는 문제점은 없으며, 전체적으로 상태가 양호한 것으로 판단된다."],
+["3. 균열/누수 + 연결통로 누수 노후화","조사당일, 건축물 일부 구조체에 균열 및 누수흔적, 연결통로부분 누수로 인해 노후화가 조사되었으며 이는 내구성과 미관향상을 위해 보수를 하는 것이 바람직할 것으로 판단된다."],
+["4. 균열/누수 + 조경 블록 균열","조사당일, 건축물 일부 구조체에 균열 및 누수흔적이 조사되었으며 또한, 외부 조경부분 블록에 균열이 상당하므로 보수를 하는 것이 바람직할 것으로 판단된다."],
+["5. 균열/누수 있으나 대체로 양호 (노후화)","조사당일, 건축물 일부에 균열 및 누수흔적 있으나 대체로 양호하며 건축물 노후화로 인한 원인으로 판단된다."],
+["6. 문제점 없음 · 외부 누수/백태, 양호","조사당일 외관상으로 보이는 문제점은 없으나 외부에 일부 누수 및 백태가 조사되었으며 전체적으로 상태가 양호한 것으로 판단된다."],
+["7. 균열/누수 + 박리·박락 + 철근노출","조사당일, 건축물 일부 구조체에 균열 및 누수흔적, 콘크리트 박리·박락, 철근노출이 조사되었으며 이는 내구성과 미관향상을 위해 보수를 하는 것이 바람직할 것으로 판단된다."],
+["8. 균열/누수 + 박리·박락 + 외부 주의관찰","조사당일, 건축물 일부 구조체에 균열 및 누수흔적, 콘크리트 박리·박락이 조사되었으며 이는 내구성과 미관향상을 위해 보수를 하는 것이 바람직할 것으로 판단된다. 또한, 외부 콘크리트 박리·박락의 경우 콘크리트 일부가 떨어질 수 있으므로 보수 및 주변 주의관찰이 필요할 것으로 판단된다."]];
+function fillSum(){var sel=$("sumsel");sel.innerHTML='<option value="">문구 선택 (선택하면 아래에 입력됩니다)</option>'+SUMS.map(function(x,i){return'<option value="'+i+'">'+x[0]+'</option>'}).join("");
+ sel.onchange=function(){if(sel.value==="")return;var t=SUMS[+sel.value][1],ta=$("sum");
+  if(ta.value.trim()&&ta.value!==t&&!confirm("현재 입력된 내용을 선택한 문구로 바꿀까요?")){sel.value="";return}
+  ta.value=t;S.sum=t;save()}}
+var MAN=[
+["시설물 주변 지반침하 및 이로 인한 활동적인 균열이 없는 상태","건물의 기울음이나 육안으로 관찰되는 지반침하는 없으나 포장면 일부 침하·균열 발생 등 부분적 경미한 침하가 발생된 상태","지반침하로 증축부위, 이음부위에 균열 및 이격, 변형이 발생된 상태","지반침하로 건물의 기울음, 주요 구조부재 균열, 지하층 바닥 균열 및 누수가 발생되어 즉각적인 보강이 필요한 상태","지반 침하로 인한 심각한 균열 등이 발생된 상태|사용금지, 긴급 보강, 철거 등의 조치를 요하는 상태|건물의 안전성이 극히 우려되는 상태 등"],
+["균열 또는 누수가 발생하지 않은 상태","미세 균열이 발생한 상태|구조적인 영향이 아닌 대부분의 손상이 콘크리트의 건조수축에 의해 발생된 상태","균열폭 0.3mm 이상 ~ 0.5mm 미만의 균열이 발생한 상태|구조적 영향을 주는 균열로 진전 될 가능성이 있는 상태","균열폭 0.5mm 이상의 균열이 발생된 상태|관통 균열, 누수가 발생된 상태|누수로 인한 광범위한 백태가 발생된 상태|균열 및 누수로 실내마감재의 광범위한 손상이 발생된 상태|구조적 영향을 주는 균열이 발생된 상태(보 중앙부 밑에서 상향으로 발생된 수직균열, 보 단부 경사균열, 기둥에 발생된 다수의 수직균열 또는 경사균열 등)","구조부재의 심각한 균열 및 누수가 발생한 상태 등"],
+["처짐, 변형 등의 발생이 없거나 양호한 상태","미세균열이 발생된 상태","변형으로 인한 폭 0.3mm 미만의 균열이 발생된 상태|설비배관 설치를 위한 보의 일부 천공(2EA 이하)한 상태|시공 미흡 등에 의한 주요구조부재 일부 단면 제거 및 손상된 상태","변형으로 인해 폭 0.3mm 이상의 균열이 발생된 상태|변형에 의해 사용성, 안전성 문제되는 상태|보 천공(직렬 4EA 이상, 병렬)한 상태","주요부재가 제거된 상태|사용제한, 즉각 사용금지 및 보강 필요성 판단 확인이 필요한 상태|구조부재의 심각한 변형이 발생한 상태 등"],
+["철근 부식이 발생하지 않았거나 박리·박락이 없는 상태","약간의 점녹이 발생하였거나 경미한 박리·박락이 발생된 상태","콘크리트의 박리 깊이가 1.0mm 미만, 박락 깊이가 20mm 미만인 상태|철근에 면녹이 발생하였고 부분적으로 들뜬 녹이 발생된 상태","콘크리트의 박리 깊이가 1.0mm 이상, 박락 깊이가 20mm 이상인 상태|들뜬 녹이 광범위하게 발생하였거나 두꺼운 층상의 녹이 발생","콘크리트 박리·박락 등으로 단면 결손이 발생된 상태|심각한 철근 부식, 노출 또는 콘크리트 박리·박락이 발생한 상태 등"],
+["접합 상태가 양호하며 내구성을 저해하는 손상이 없는 상태","경미한 손상이 발생된 상태","일부 볼트 풀림, 누락 및 조임, 용접 미흡이 발생된 상태","볼트 체결 누락 및 용접 미실시로 인한 접합상태가 불량한 상태|용접 연결부 균열진전 등으로 안전성 저하가 우려되는 상태|볼트 풀림이 다수 발생된 상태","용접연결부 균열진전 등으로 인해 연결 기능이 상실된 상태|접합부의 심각한 손상 등이 발생된 상태 등"],
+["구조부재(철골 기둥, 보, 트러스 등)의 기울음, 처짐, 좌굴, 제거, 절단 등의 손상이 없는 상태","구조부재에 경미한 손상이 발생된 상태","구조부재의 시공오차 및 조립과정에서 일부 변형이 발생된 상태|데크플레이트 용접 절단 부위 변형이 발생한 상태","구조부재 내력저하로 처짐, 좌굴 등 변형이 발생된 상태|구조부재 접합부가 파단, 탈락된 상태","좌굴에 의한 과대변형 및 파단으로 구조부재의 안전성 저하가 우려되는 상태|철골부재의 심각한 변형 등이 발생된 상태 등"],
+["방청 및 내화도장이 양호하며 부식이 없고, 단면손실이 없는 상태","방청 및 내화도장 일부가 박리되었으나 부식이 없는 상태|부재의 단면 손실 등의 손상이 경미하지만 부식이 없는 상태","방청 또는 내화도장 일부가 박락된 상태|부재에 부분적 부식이 있는 상태|보조 부재에 일부 단면결손 또는 시공 미흡 및 불량으로 부재 길이 부족 등이 발생된 상태","부재에 전체적으로 상당한 부식이 진행된 상태","주요 부재의 단면제거 또는 미시공이 발생된 상태|철골부재의 심각한 부식 또는 단면손실이 발생한 상태 등"]];
+function manText(i,g){return MAN[i][g].split("|").map(function(t){return"○ "+t}).join("\n")}
+var ST=["철골구조","철근콘크리트구조","철골&철근콘크리트구조"];
+function renderInfo(){var h="";INFO.forEach(function(f){var k=f[1],v=S.info[k]||"";
+ if(k==="struct"){var cu=S.info.structSel==="custom"||(v!==""&&ST.indexOf(v)<0);
+  h+='<div><label>구조형식</label><select data-sel="1"><option value="">선택</option>'+ST.map(function(t){return'<option'+(v===t&&!cu?' selected':'')+'>'+esc(t)+'</option>'}).join("")+'<option value="custom"'+(cu?' selected':'')+'>직접입력</option></select>'+(cu?'<input data-k="struct" value="'+esc(v)+'" placeholder="구조형식 직접 입력" style="margin-top:6px">':'')+'</div>'}
+ else h+='<div><label>'+f[0]+'</label><input data-k="'+k+'" value="'+esc(v)+'"></div>'});
+ $("info").innerHTML=h;
+ $("info").oninput=function(e){if(e.target.dataset.k===undefined)return;S.info[e.target.dataset.k]=e.target.value;save()};
+ $("info").onchange=function(e){if(e.target.dataset.sel===undefined)return;var v=e.target.value;
+  if(v==="custom"){S.info.structSel="custom";S.info.struct=""}else{S.info.structSel="";S.info.struct=v}save();renderInfo()}}
 function renderItems(){var h="";
  S.it.forEach(function(x,i){
-  h+='<div class="c"><div class="it">'+(i+1)+'. '+ITEMS[i]+'<span class="tag" id="tg'+i+'"></span></div>';
+  h+='<div class="c"><div class="it">'+(i+1)+'. '+ITEMS[i]+'<span class="tag" id="tg'+i+'"></span></div>'+(i>0?'<div class="sub">※ 마감재 등으로 일부 구역만 조사되어 대표성이 없으면 a·b로 판정할 수 없고, 조사·불가 부위와 사유를 기재 (매뉴얼)</div>':'');
   h+='<div class="row">';GR.forEach(function(g,j){h+='<button class="b'+(x.g===j?" on":"")+'" data-i="'+i+'" data-g="'+j+'">'+g[0]+'<small>('+g[1]+')</small></button>'});
   h+='<button class="b na'+(x.g==="na"?" on":"")+'" data-i="'+i+'" data-g="na">해당없음</button></div>';
   h+='<div class="row"><span class="sub" style="align-self:center">보수필요</span><button class="b'+(x.fix==="O"?" on":"")+'" data-i="'+i+'" data-f="O">O</button><button class="b'+(x.fix==="X"?" on":"")+'" data-i="'+i+'" data-f="X">X</button>';
-  h+='<label class="cam">📷 사진 촬영<input type="file" accept="image/*" capture="environment" multiple data-p="'+i+'"></label></div>';
-  h+='<div class="ph" id="ph'+i+'">'+x.ph.map(function(p,k){return'<div><img src="'+p.d+'" alt="현장 사진"><button data-i="'+i+'" data-del="'+k+'">×</button></div>'}).join("")+'</div>';
+  h+='</div>';
   h+='<label>조사자 의견 (점검 여건 포함)</label><textarea data-op="'+i+'">'+S.it[i].op.replace(/</g,"&lt;")+'</textarea></div>'});
  $("items").innerHTML=h;
  $("items").onclick=function(e){var t=e.target.closest("button");if(!t)return;var i=+t.dataset.i;
-  if(t.dataset.g!==undefined){var g=t.dataset.g;S.it[i].g=g==="na"?"na":+g;if(g==="na")S.it[i].fix="X";}
+  if(t.dataset.g!==undefined){var g=t.dataset.g,x=S.it[i];x.g=g==="na"?"na":+g;if(g==="na")x.fix="X";var nt=g==="na"?"해당사항 없음":manText(i,+g);if(!x.op||x.op===x.auto||confirm((i+1)+"번 항목의 조사자 의견을 선택한 등급 문구로 바꿀까요?")){x.op=nt;x.auto=nt}}
   else if(t.dataset.f){S.it[i].fix=t.dataset.f}
-  else if(t.dataset.del!==undefined){S.it[i].ph.splice(+t.dataset.del,1)}
   else return;save();renderItems();renderRes()};
  $("items").oninput=function(e){if(e.target.dataset.op!==undefined){S.it[+e.target.dataset.op].op=e.target.value;save()}};
  $("items").onchange=function(e){if(e.target.dataset.p!==undefined){addPhotos(+e.target.dataset.p,e.target.files)}};
@@ -125,39 +178,173 @@ function renderRes(){var sc=calc(),el=$("score"),st=$("state");
  if(sc===null){st.textContent="–";st.style.background="var(--sub)"}else{var s=stateOf(sc);st.textContent=s[0];st.style.background=s[1]}
  var h="";OPTS.forEach(function(o,i){h+='<div class="row"><span style="flex:0 0 96px;align-self:center">'+o[0]+'</span><button class="b'+(S.opt[i]===0?" on":"")+'" data-o="'+i+'" data-v="0">'+o[1]+'</button><button class="b'+(S.opt[i]===1?" on":"")+'" data-o="'+i+'" data-v="1">'+o[2]+'</button></div>'});
  $("opts").innerHTML=h;$("opts").onclick=function(e){var t=e.target.closest("button");if(!t)return;S.opt[+t.dataset.o]=+t.dataset.v;save();renderRes()};
- var ph=[];S.it.forEach(function(x,i){x.ph.forEach(function(p,k){ph.push([i,k,p])})});
- $("sheetinfo").textContent=ph.length?"사진 "+ph.length+"장 · 촬영일자와 촬영내용은 수정할 수 있습니다.":"항목별로 촬영한 사진이 여기에 사진대지로 모입니다.";
- $("sheet").innerHTML=ph.map(function(a,n){return'<figure><div><b>사진대지-'+(n+1)+'</b></div><img src="'+a[2].d+'" alt="사진대지"><input data-pi="'+a[0]+'" data-pk="'+a[1]+'" data-f="date" value="'+a[2].date+'" aria-label="촬영일자"><div>과업명: 3종시설물 실태조사</div><input data-pi="'+a[0]+'" data-pk="'+a[1]+'" data-f="note" value="'+a[2].note.replace(/"/g,"&quot;")+'" aria-label="촬영내용"></figure>'}).join("");
- $("sheet").oninput=function(e){var d=e.target.dataset;if(d.pi===undefined)return;S.it[+d.pi].ph[+d.pk][d.f]=e.target.value;save()}}
-function init(){load();renderInfo();renderItems();renderRes();
- $("sum").value=S.sum;$("sum").oninput=function(){S.sum=this.value;save()};
- $("t1").value=S.t1;$("t2").value=S.t2;
+ renderSlots()}
+var svT=null,dirty=false,LS=false,dbp=null,BK=null;
+function nid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+function fixS(s){if(!s.info)s.info={};if(s.info.chap===undefined)s.info.chap="5.5";if(!s.ph)s.ph=[];while(s.ph.length<10)s.ph.push(null);if(!s.nt)s.nt=[];while(s.nt.length<10)s.nt.push("");if(s.t1===undefined)s.t1=8;if(s.t2===undefined)s.t2=5;return s}
+function dbo(){if(dbp)return dbp;dbp=new Promise(function(res,rej){try{var r=indexedDB.open("chk3db",1);r.onupgradeneeded=function(){var d=r.result;d.createObjectStore("b",{keyPath:"id"});d.createObjectStore("i",{keyPath:"id"})};r.onsuccess=function(){res(r.result)};r.onerror=function(){rej(r.error)}}catch(e){rej(e)}});return dbp}
+function tx(st,mode,fn){return dbo().then(function(d){return new Promise(function(res,rej){var t=d.transaction(st,mode),q=fn(t);t.oncomplete=function(){res(q&&q.result)};t.onerror=function(){rej(t.error)};t.onabort=function(){rej(t.error)}})})}
+function lsi(){return JSON.parse(localStorage.getItem("chk3i")||"[]")}
+function dbAll(){if(LS)return Promise.resolve(lsi());return tx(["i"],"readonly",function(t){return t.objectStore("i").getAll()}).then(function(a){return a||[]})}
+function dbGet(id){if(LS){var v=localStorage.getItem("chk3b_"+id);return Promise.resolve(v?JSON.parse(v):null)}return tx(["b"],"readonly",function(t){return t.objectStore("b").get(id)})}
+function dbPut(r,m){if(LS){try{localStorage.setItem("chk3b_"+r.id,JSON.stringify(r));var a=lsi().filter(function(x){return x.id!==r.id});a.push(m);localStorage.setItem("chk3i",JSON.stringify(a));return Promise.resolve()}catch(e){return Promise.reject(e)}}return tx(["b","i"],"readwrite",function(t){t.objectStore("b").put(r);t.objectStore("i").put(m)})}
+function dbDel(id){if(LS){localStorage.removeItem("chk3b_"+id);localStorage.setItem("chk3i",JSON.stringify(lsi().filter(function(x){return x.id!==id})));return Promise.resolve()}return tx(["b","i"],"readwrite",function(t){t.objectStore("b").delete(id);t.objectStore("i").delete(id)})}
+function ttl(){var I=S.info;return(I.no?I.no+" · ":"")+(I.name||"새 건물")}
+function summ(){var sc=calc(),I=S.info;return{id:S.id,name:I.name||"",no:I.no||"",date:I.date||"",ph:S.ph.filter(Boolean).length,sc:sc===null?null:+sc.toFixed(2),st:sc===null?"":stateOf(sc)[0],upd:Date.now()}}
+function flush(){clearTimeout(svT);if(!S||!dirty)return Promise.resolve();dirty=false;var t=$("ttl");if(t)t.textContent=ttl();
+ return dbPut(S,summ()).catch(function(e){dirty=true;alert("저장에 실패했습니다. 사진을 줄이거나 백업 후 다시 시도해 주세요. ("+(e&&e.name||e)+")")})}
+function save(){PDF=null;var pb=$("pdfb");if(pb)pb.textContent="PDF 만들기";dirty=true;clearTimeout(svT);svT=setTimeout(flush,350)}
+function view(v){$("list").style.display=v==="list"?"":"none";$("edit").style.display=v==="edit"?"":"none";$("bar").style.display=v==="edit"?"":"none"}
+async function showList(){await flush();S=null;BK=null;$("expb").textContent="전체 백업 만들기";var a=await dbAll();a.sort(function(x,y){return y.upd-x.upd});
+ $("lst").innerHTML=a.length?a.map(function(m){return'<div class="c"><div data-o="'+m.id+'" style="cursor:pointer"><div class="it">'+esc((m.no?m.no+" · ":"")+(m.name||"(이름 없음)"))+'</div><div class="sub">'+esc(m.date||"")+' · 사진 '+m.ph+'/10'+(m.sc!==null&&m.sc!==undefined?' · '+m.sc.toFixed(2)+'점 '+esc(m.st):' · 미평가')+'</div></div><div class="row"><button class="b" data-o="'+m.id+'">열기</button><button class="b" data-cp="'+m.id+'">복제</button><button class="b" data-dl="'+m.id+'">삭제</button></div></div>'}).join(""):'<div class="c sub">저장된 건물이 없습니다. “＋ 새 건물”을 눌러 시작하세요.</div>';
+ view("list");window.scrollTo(0,0)}
+function openS(s){S=fixS(s);PDF=null;$("pdfb").textContent="PDF 만들기";renderInfo();renderItems();renderRes();$("sum").value=S.sum;$("sumsel").selectedIndex=0;$("t1").value=S.t1;$("t2").value=S.t2;$("ttl").textContent=ttl();view("edit");window.scrollTo(0,0)}
+async function openB(id){var r=await dbGet(id);if(r)openS(r)}
+function dl(b,n){var u=URL.createObjectURL(b),a=document.createElement("a");a.href=u;a.download=n;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(u)},5000)}
+function initOnce(){fillSum();
+ $("sum").oninput=function(){S.sum=this.value;save()};
  $("t1").oninput=function(){S.t1=+this.value;save();renderRes()};$("t2").oninput=function(){S.t2=+this.value;save();renderRes()};
- $("reset").onclick=function(){if(confirm("입력한 내용과 사진을 모두 지울까요?")){S=blank();save();location.reload()}}}
+ $("back").onclick=function(){showList()};
+ $("newb").onclick=function(){var n=blank();n.id=nid();openS(n)};
+ $("reset").onclick=async function(){if(confirm("이 건물의 입력 내용과 사진을 모두 삭제할까요? 되돌릴 수 없습니다.")){var id=S.id;dirty=false;clearTimeout(svT);await dbDel(id);showList()}};
+ $("lst").onclick=async function(e){var t=e.target.closest("[data-o],[data-cp],[data-dl]");if(!t)return;var d=t.dataset;
+  if(d.o)return openB(d.o);
+  if(d.cp){var r=await dbGet(d.cp);if(!r)return;var n=blank();["chap","date","mgr","tel","addr","en","eo","et"].forEach(function(k){if(r.info[k])n.info[k]=r.info[k]});n.t1=r.t1;n.t2=r.t2;n.id=nid();return openS(n)}
+  if(d.dl){var q=await dbGet(d.dl);if(q&&confirm("‘"+(q.info.name||"이 건물")+"’을 삭제할까요? 되돌릴 수 없습니다.")){await dbDel(d.dl);showList()}}};
+ $("expb").onclick=async function(){var b=$("expb");
+  if(BK){var f=new File([BK.blob],BK.nm,{type:"application/json"});if(navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f]}).catch(function(e){if(!e||e.name!=="AbortError")dl(BK.blob,BK.nm)})}else dl(BK.blob,BK.nm);return}
+  var a=await dbAll(),out=[];for(var i=0;i<a.length;i++){var r=await dbGet(a[i].id);if(r)out.push(r)}
+  if(!out.length){$("bmsg").textContent="저장된 건물이 없습니다.";return}
+  BK={blob:new Blob([JSON.stringify({v:1,b:out})],{type:"application/json"}),nm:"실태조사백업_"+td().replace(/\D/g,"")+".json"};b.textContent="백업 파일 저장·공유 ("+out.length+"건)";$("bmsg").textContent="한 번 더 누르면 파일이 저장됩니다."};
+ $("impf").onchange=async function(){var f=this.files[0];if(!f)return;try{var j=JSON.parse(await f.text()),a=j.b||[],n=0;for(var i=0;i<a.length;i++){var r=fixS(a[i]);if(!r.id)r.id=nid();S=r;dirty=true;await flush();n++}S=null;this.value="";await showList();$("bmsg").textContent="건물 "+n+"건을 불러왔습니다."}catch(e){$("bmsg").textContent="불러오기에 실패했습니다. 올바른 백업 파일인지 확인해 주세요."}};
+ document.addEventListener("visibilitychange",function(){if(document.hidden)flush()});window.addEventListener("pagehide",flush)}
+async function boot(){try{await dbo()}catch(e){LS=true}
+ try{var old=localStorage.getItem(KEY),all=await dbAll();if(old&&!localStorage.getItem("chk3mig")&&!all.length){S=fixS(JSON.parse(old));S.id=nid();dirty=true;await flush();localStorage.setItem("chk3mig","1")}}catch(e){}
+ initOnce();await showList()}
+function init(){boot()}
+var NT=["건축물 전경","지반침하 조사","육안조사 현황"];
+function td(){var d=new Date();return d.getFullYear()+". "+("0"+(d.getMonth()+1)).slice(-2)+". "+("0"+d.getDate()).slice(-2)}
+function renderSlots(){var h="";for(var n=0;n<10;n++){var p=S.ph[n];
+ h+='<figure><label class="slot"><input type="file" accept="image/*" capture="environment" data-s="'+n+'"><b>사진대지-'+(n+1)+'</b><div class="thumb">'+(p?'<img src="'+p.d+'" alt="사진대지-'+(n+1)+'">':'📷 눌러서 촬영')+'</div></label>';
+ h+='<label>촬영일자</label><input data-sk="'+n+'" value="'+(p?esc(p.date):"")+'" placeholder="촬영 시 자동 입력"'+(p?'':' disabled')+'>';
+ h+='<label>과업명</label><div>3종 시설물 실태조사</div>';
+ h+='<label>촬영내용</label><select data-sn="'+n+'"><option value="">선택</option>'+NT.map(function(t){return'<option'+(S.nt[n]===t?' selected':'')+'>'+t+'</option>'}).join("")+'</select>';
+ h+=(p?'<button class="b" data-sdel="'+n+'" style="margin-top:6px;padding:4px">사진 삭제</button>':'')+'</figure>'}
+ $("sheet").innerHTML=h;$("sheetinfo").textContent="촬영 "+S.ph.filter(Boolean).length+" / 10 · 칸을 누르면 촬영, 다시 누르면 재촬영";
+ $("sheet").onchange=function(e){var d=e.target.dataset;
+  if(d.sn!==undefined){S.nt[+d.sn]=e.target.value;save();return}
+  if(d.s===undefined||!e.target.files[0])return;
+  shrink(e.target.files[0],function(u){S.ph[+d.s]={d:u,date:td()};save();renderSlots()})};
+ $("sheet").oninput=function(e){var d=e.target.dataset;if(d.sk===undefined||!S.ph[+d.sk])return;S.ph[+d.sk].date=e.target.value;save()};
+ $("sheet").onclick=function(e){var t=e.target.closest("button");if(t&&t.dataset.sdel!==undefined){S.ph[+t.dataset.sdel]=null;save();renderSlots()}}}
 function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;")}
 function ck(o){return o?"■":"□"}
-function renderPrint(){var I=S.info,sc=calc(),sn=sc===null?-1:["양호","주의관찰","지정검토"].indexOf(stateOf(sc)[0]);
- var h='<div class="pg"><h3>5.5 '+esc(I.name)+'</h3><h4>5.5.1 개요 및 체크리스트</h4>';
- h+='<table><tr><th rowspan="4">시설물<br>정보</th><th>번호</th><td>'+esc(I.no)+'</td><th>시설물명</th><td>'+esc(I.name)+'</td><th colspan="2">조사일시</th><td>'+esc(I.date)+'</td></tr>';
+var PDFF='"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif';
+var PDF=null;
+function mkc(){var c=document.createElement("canvas");c.width=1260;c.height=1782;var x=c.getContext("2d");x.scale(6,6);x.fillStyle="#fff";x.fillRect(0,0,210,297);x.fillStyle="#000";x.strokeStyle="#000";x.textBaseline="middle";return[c,x]}
+function wr(x,t,w){var out=[];String(t==null?"":t).split("\n").forEach(function(p){var ln="",sp=-1;for(var i=0;i<p.length;i++){var ch=p[i];
+ if(ln&&x.measureText(ln+ch).width>w){if(ch===" "){out.push(ln);ln="";sp=-1;continue}if(sp>0){out.push(ln.slice(0,sp));ln=ln.slice(sp+1)+ch;sp=-1}else if(ln.lastIndexOf("&")>=0){var q=ln.lastIndexOf("&");out.push(ln.slice(0,q+1));ln=ln.slice(q+1)+ch}else{out.push(ln);ln=ch}}else{ln+=ch}
+ if(ch===" ")sp=ln.length-1}out.push(ln)});return out}
+function nh(x,t,W,o){x.font=(o.b?"bold ":"")+o.sz+"px "+PDFF;return wr(x,t,W-2.4).length*o.sz*1.35+2.2}
+function cell(x,X,Y,W,H,t,o){if(o.fill){x.fillStyle=o.fill;x.fillRect(X,Y,W,H);x.fillStyle="#000"}x.lineWidth=.25;x.strokeRect(X,Y,W,H);
+ if(t===""||t==null)return;x.font=(o.b?"bold ":"")+o.sz+"px "+PDFF;var L=wr(x,t,W-2.4),lh=o.sz*1.35,y=Y+(H-L.length*lh)/2+lh/2,l=o.al==="l";x.textAlign=l?"left":"center";
+ L.forEach(function(s,i){x.fillText(s,l?X+1.2:X+W/2,y+i*lh)})}
+function p1(x,f,dry,ex){ex=ex||0;var I=S.info,C=I.chap===undefined?"5.5":I.chap,sc=calc(),sn=sc===null?-1:["양호","주의관찰","지정검토"].indexOf(stateOf(sc)[0]),O=S.opt,sz=3*f,y=25,X0=12,W=186;
+ function cxs(p){var a=[X0],s=0;p.forEach(function(v){s+=v;a.push(X0+W*s/100)});return a}
+ function th(c,s,t){return{c:c,s:s,t:t,b:1,fill:"#e6e6e6",sz:sz}}
+ function td(c,s,t,al){return{c:c,s:s,t:t,al:al,sz:sz}}
+ function row(cx,cs,mh,ad){var h=mh;cs.forEach(function(c){h=Math.max(h,nh(x,c.t,cx[c.c+c.s]-cx[c.c],c))});h+=ad||0;if(!dry)cs.forEach(function(c){cell(x,cx[c.c],y,cx[c.c+c.s]-cx[c.c],h,c.t,c)});y+=h;return h}
+ function sp(cx,c,y0,h,t){if(!dry)cell(x,cx[c],y0,cx[c+1]-cx[c],h,t,th(0,1,t))}
+ if(!dry){x.fillStyle="#000";x.textAlign="left";x.font="bold 4.94px "+PDFF;x.fillText(C+" "+(I.name||""),12,15.5);x.font="bold 3.88px "+PDFF;x.fillText(C+".1 개요 및 체크리스트",12,21.5)}
+ var cx=cxs([9,10,20,12,17,9,8,15]),y1=y;
+ var h1=row(cx,[th(1,1,"건물번호"),td(2,1,I.no),th(3,1,"시설물명"),td(4,1,I.name),th(5,2,"조사일시"),td(7,1,I.date)],7*f);
+ var h2=row(cx,[th(1,1,"구분"),td(2,1,I.area),th(3,1,"구조형식"),td(4,1,I.struct),th(6,1,"성명"),td(7,1,I.en)],7*f);
+ var h3=row(cx,[th(1,1,"관리주체"),td(2,1,I.mgr),th(3,1,"연락처"),td(4,1,I.tel),th(6,1,"소속"),td(7,1,I.eo)],7*f);
+ var h4=row(cx,[th(1,1,"주소"),td(2,3,I.addr),th(6,1,"연락처"),td(7,1,I.et)],7*f);
+ sp(cx,0,y1,h1+h2+h3+h4,"시설물\n정보");sp(cx,5,y1+h1,h2+h3+h4,"책임\n기술자");
+ cx=cxs([22,36,8,5.66,5.66,5.66,5.66,5.66,5.66]);y1=y;
+ var ha=row(cx,[th(1,2,"조사결과"),th(3,6,"평가결과")],6*f);
+ var hb=row(cx,[th(1,1,"조사자 의견\n(점검 여건 포함)"),th(2,1,"보수필요\n유무")].concat(GR.map(function(g,i){return th(3+i,1,g[0]+"\n("+g[1]+")")}),[th(8,1,"해당\n없음")]),10*f);
+ sp(cx,0,y1,ha+hb,"평가항목");
+ S.it.forEach(function(it,i){var op=it.op||(it.g==="na"?"해당사항 없음":""),yy=y,cs=[td(0,1,(i+1)+". "+ITEMS[i],"l"),td(1,1,op,"l"),td(2,1,it.fix)];for(var j=0;j<6;j++)cs.push(td(3+j,1,""));
+  var h=row(cx,cs,13*f,ex*0.8/7);if(!dry){var gi=it.g==="na"?5:it.g;if(gi!==null&&gi!==undefined){var mx=(cx[3+gi]+cx[4+gi])/2;x.beginPath();x.arc(mx,yy+h/2,1.5,0,6.2832);x.lineWidth=.3;x.stroke()}}});
+ cx=cxs([12,16,18,14,40]);y1=y;
+ var r1=row(cx,[th(1,1,"종합점수"),td(2,1,sc===null?"":sc.toFixed(2)+" 점"),th(3,1,"안전상태"),td(4,1,ck(sn===0)+" 양호  "+ck(sn===1)+" 주의관찰  "+ck(sn===2)+" 지정검토")],7*f);
+ var r2=row(cx,[th(1,1,"긴급안전점검"),td(2,1,ck(O[0]===0)+" 필요 "+ck(O[0]===1)+" 불필요"),th(3,1,"중대결함"),td(4,1,ck(O[1]===0)+" 있음  "+ck(O[1]===1)+" 없음")],7*f);
+ var r3=row(cx,[th(1,1,"정밀안전진단"),td(2,1,ck(O[2]===0)+" 필요 "+ck(O[2]===1)+" 불필요"),th(3,1,"안전조치"),td(4,1,ck(O[3]===0)+" 필요  "+ck(O[3]===1)+" 불필요")],7*f);
+ sp(cx,0,y1,r1+r2+r3,"평가결과");
+ row(cx,[th(0,1,"종합의견 및\n특기사항"),td(1,4,S.sum,"l")],16*f,ex*0.2);
+ return y}
+function pp(x,C,list){x.fillStyle="#000";x.textAlign="left";x.font="bold 3.88px "+PDFF;x.fillText(C+".2 사진대지",12,15.5);
+ var BW=93,BH=79.5,o={sz:3.175};
+ list.forEach(function(e,k){var c=k%2,r=(k-c)/2,bx=12+BW*c,by=20+BH*r;
+  cell(x,bx,by,BW*.34,6.5,"▣ 사진대지-"+e.n,o);cell(x,bx+BW*.34,by,BW*.66,6.5,"촬영일자 : "+fd(e.p.date),o);
+  cell(x,bx,by+6.5,BW*.23,6.5,"과업명",o);cell(x,bx+BW*.23,by+6.5,BW*.77,6.5,"3종 시설물 실태조사",o);
+  cell(x,bx,by+13,BW*.23,6.5,"촬영내용",o);cell(x,bx+BW*.23,by+13,BW*.77,6.5,S.nt[e.n-1]||"",o);
+  cell(x,bx,by+19.5,BW,60,"",o);
+  if(e.im){var s=Math.min(70/e.im.width,55/e.im.height),w=e.im.width*s,h=e.im.height*s;x.drawImage(e.im,bx+(BW-w)/2,by+19.5+(60-h)/2,w,h)}});
+ x.lineWidth=.6;x.strokeRect(12,20,186,BH*3);x.beginPath();x.moveTo(105,20);x.lineTo(105,20+BH*3);x.moveTo(12,20+BH);x.lineTo(198,20+BH);x.moveTo(12,20+BH*2);x.lineTo(198,20+BH*2);x.stroke()}
+function u8(d){var s=atob(d.split(",")[1]),a=new Uint8Array(s.length);for(var i=0;i<s.length;i++)a[i]=s.charCodeAt(i);return a}
+function buildPdf(pg){var enc=new TextEncoder(),parts=[],off=0,xr=[],N=pg.length,T=2+3*N;
+ function add(v){var b=typeof v==="string"?enc.encode(v):v;parts.push(b);off+=b.length}
+ function obj(n,b){xr[n]=off;add(n+" 0 obj\n"+b+"\nendobj\n")}
+ add("%PDF-1.4\n");obj(1,"<< /Type /Catalog /Pages 2 0 R >>");
+ var kids=[];for(var i=0;i<N;i++)kids.push((3+3*i)+" 0 R");obj(2,"<< /Type /Pages /Count "+N+" /Kids ["+kids.join(" ")+"] >>");
+ pg.forEach(function(d,i){var p=3+3*i,c=p+1,m=p+2,j=u8(d),cs="q 595.28 0 0 841.89 0 0 cm /Im0 Do Q";
+  obj(p,"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /XObject << /Im0 "+m+" 0 R >> >> /Contents "+c+" 0 R >>");
+  obj(c,"<< /Length "+cs.length+" >>\nstream\n"+cs+"\nendstream");
+  xr[m]=off;add(m+" 0 obj\n<< /Type /XObject /Subtype /Image /Width 1260 /Height 1782 /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length "+j.length+" >>\nstream\n");add(j);add("\nendstream\nendobj\n")});
+ var xo=off;add("xref\n0 "+(T+1)+"\n0000000000 65535 f \n");for(var n=1;n<=T;n++)add(("0000000000"+xr[n]).slice(-10)+" 00000 n \n");
+ add("trailer\n<< /Size "+(T+1)+" /Root 1 0 R >>\nstartxref\n"+xo+"\n%%EOF");return new Blob(parts,{type:"application/pdf"})}
+async function makePdf(){var b=$("pdfb");b.textContent="만드는 중…";b.disabled=true;
+ try{var pg=[],m=mkc(),f=1;while(f>.6&&p1(m[1],f,true)>287)f-=.04;var ex=Math.max(0,287-p1(m[1],f,true));p1(m[1],f,false,ex);pg.push(m[0].toDataURL("image/jpeg",.92));
+  var C=S.info.chap===undefined?"5.5":S.info.chap,list=[];S.ph.forEach(function(p,k){if(p)list.push({p:p,n:k+1})});
+  await Promise.all(list.map(function(e){return new Promise(function(r){var im=new Image();im.onload=function(){e.im=im;r()};im.onerror=r;im.src=e.p.d})}));
+  for(var a=0;a<list.length;a+=6){var m2=mkc();pp(m2[1],C,list.slice(a,a+6));pg.push(m2[0].toDataURL("image/jpeg",.92))}
+  var blob=buildPdf(pg),nm=(C+"_"+(S.info.name||"시설물")+".pdf").replace(/[\\\/:*?"<>|\s]+/g,"_");
+  if(PDF&&PDF.url)URL.revokeObjectURL(PDF.url);PDF={blob:blob,name:nm,url:URL.createObjectURL(blob),pg:pg};b.textContent="PDF 열기·공유"}
+ catch(e){alert("PDF 생성 중 오류가 발생했습니다: "+e.message);b.textContent="PDF 만들기"}
+ b.disabled=false}
+function showPages(){var o=document.createElement("div");o.style.cssText="position:fixed;top:0;left:0;right:0;bottom:0;z-index:99;background:#222;overflow:auto;padding:calc(12px + env(safe-area-inset-top,0px)) 12px 40px";
+ o.innerHTML='<div style="color:#fff;margin-bottom:10px">각 쪽 이미지를 길게 눌러 <b>사진에 저장</b> 또는 <b>공유</b>를 선택하세요.</div><button class="b" id="pgx" style="margin-bottom:10px">닫기</button>'+PDF.pg.map(function(d,i){return'<img src="'+d+'" alt="'+(i+1)+'쪽" style="width:100%;display:block;margin-bottom:10px;background:#fff">'}).join("");
+ document.body.appendChild(o);o.querySelector("#pgx").onclick=function(){o.remove()}}
+function pdfBtn(){if(!PDF){makePdf();return}var f=new File([PDF.blob],PDF.name,{type:"application/pdf"});
+ if(navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f]}).catch(function(e){if(!e||e.name!=="AbortError")showPages()})}else{var w=null;try{w=window.open(PDF.url,"_blank")}catch(e){}if(!w)showPages()}}
+if(/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.maxTouchPoints>1&&/Mac/.test(navigator.platform)))document.getElementById("prb").style.display="none";
+var PM="all";
+function fd(s){return String(s||"").replace(/\s*\.\s*/g,". ").replace(/\.\s*$/,"")}
+function renderPrint(){var I=S.info,C=esc(I.chap===undefined?"5.5":I.chap),sc=calc(),sn=sc===null?-1:["양호","주의관찰","지정검토"].indexOf(stateOf(sc)[0]),O=S.opt;
+ var h='<div class="pg"><div id="p1"><h3>'+C+' '+esc(I.name)+'</h3><h4>'+C+'.1 개요 및 체크리스트</h4>';
+ h+='<table><colgroup><col style="width:9%"><col style="width:10%"><col style="width:20%"><col style="width:12%"><col style="width:17%"><col style="width:9%"><col style="width:8%"><col style="width:15%"></colgroup>';
+ h+='<tr><th rowspan="4">시설물<br>정보</th><th>건물번호</th><td>'+esc(I.no)+'</td><th>시설물명</th><td>'+esc(I.name)+'</td><th colspan="2">조사일시</th><td>'+esc(I.date)+'</td></tr>';
  h+='<tr><th>구분</th><td>'+esc(I.area)+'</td><th>구조형식</th><td>'+esc(I.struct)+'</td><th rowspan="3">책임<br>기술자</th><th>성명</th><td>'+esc(I.en)+'</td></tr>';
  h+='<tr><th>관리주체</th><td>'+esc(I.mgr)+'</td><th>연락처</th><td>'+esc(I.tel)+'</td><th>소속</th><td>'+esc(I.eo)+'</td></tr>';
  h+='<tr><th>주소</th><td colspan="3">'+esc(I.addr)+'</td><th>연락처</th><td>'+esc(I.et)+'</td></tr></table>';
- h+='<table style="margin-top:-1px"><colgroup><col style="width:20%"><col style="width:33%"><col style="width:9%"><col span="6" style="width:6.3%"></colgroup><tr><th rowspan="2">평가항목</th><th colspan="2">조사결과</th><th colspan="6">평가결과</th></tr><tr><th>조사자 의견<br>(점검 여건 포함)</th><th>보수필요<br>유무</th>'+GR.map(function(g){return'<th>'+g[0]+'<br>('+g[1]+')</th>'}).join("")+'<th>해당<br>없음</th></tr>';
+ h+='<table class="t2"><colgroup><col style="width:22%"><col style="width:36%"><col style="width:8%"><col span="6" style="width:5.66%"></colgroup>';
+ h+='<tr><th rowspan="2">평가항목</th><th colspan="2">조사결과</th><th colspan="6">평가결과</th></tr>';
+ h+='<tr><th>조사자 의견<br>(점검 여건 포함)</th><th>보수필요<br>유무</th>'+GR.map(function(g){return'<th>'+g[0]+'<br>('+g[1]+')</th>'}).join("")+'<th>해당<br>없음</th></tr>';
  S.it.forEach(function(x,i){var op=x.op||(x.g==="na"?"해당사항 없음":"");
-  h+='<tr><td class="l">'+(i+1)+'. '+esc(ITEMS[i])+'</td><td class="l" style="height:16mm">'+esc(op)+'</td><td>'+x.fix+'</td>';
-  for(var j=0;j<5;j++)h+='<td>'+(x.g===j?"◯":"")+'</td>';h+='<td>'+(x.g==="na"?"◯":"")+'</td></tr>'});
+  h+='<tr><td class="l" style="height:13mm">'+(i+1)+'. '+esc(ITEMS[i])+'</td><td class="l">'+esc(op).replace(/\n/g,"<br>")+'</td><td>'+x.fix+'</td>';
+  for(var j=0;j<5;j++)h+='<td>'+(x.g===j?"○":"")+'</td>';h+='<td>'+(x.g==="na"?"○":"")+'</td></tr>'});
  h+='</table>';
- h+='<table style="margin-top:-1px"><colgroup><col style="width:14%"><col style="width:18%"><col style="width:30%"><col style="width:14%"><col style="width:24%"></colgroup><tr><th rowspan="3">평가결과</th><th>종합점수</th><td>'+(sc===null?"":sc.toFixed(2)+" 점")+'</td><th>안전상태</th><td>'+ck(sn===0)+' 양호 '+ck(sn===1)+' 주의관찰 '+ck(sn===2)+' 지정검토</td></tr>';
- var O=S.opt;h+='<tr><th>긴급안전점검</th><td>'+ck(O[0]===0)+' 필요 '+ck(O[0]===1)+' 불필요</td><th>중대결함</th><td>'+ck(O[1]===0)+' 있음 '+ck(O[1]===1)+' 없음</td></tr>';
- h+='<tr><th>정밀안전진단</th><td>'+ck(O[2]===0)+' 필요 '+ck(O[2]===1)+' 불필요</td><th>안전조치</th><td>'+ck(O[3]===0)+' 필요 '+ck(O[3]===1)+' 불필요</td></tr>';
- h+='<tr><th>종합의견 및<br>특기사항</th><td colspan="4" style="height:18mm">'+esc(S.sum).replace(/\n/g,"<br>")+'</td></tr></table></div>';
- var ph=[];S.it.forEach(function(x){x.ph.forEach(function(p){ph.push(p)})});
- for(var a=0;a<ph.length;a+=6){h+='<div class="pg"><h4>5.5.2 사진대지</h4><table class="ph2">';
-  for(var r=0;r<3;r++){h+='<tr>';for(var c=0;c<2;c++){var n=a+r*2+c,p=ph[n];
-   h+='<td>'+(p?'<b>▣ 사진대지-'+(n+1)+'</b> &nbsp; 촬영일자 : '+esc(p.date)+'<img src="'+p.d+'" alt="사진대지">과업명 : 3종시설물 실태조사<br>촬영내용 : '+esc(p.note):'')+'</td>'}h+='</tr>'}
-  h+='</table></div>'}
- $("pr").innerHTML=h}
-function doPrint(){renderPrint();window.print()}
+ h+='<table class="t2"><colgroup><col style="width:12%"><col style="width:16%"><col style="width:18%"><col style="width:14%"><col style="width:40%"></colgroup>';
+ h+='<tr><th rowspan="3">평가결과</th><th>종합점수</th><td>'+(sc===null?"":sc.toFixed(2)+" 점")+'</td><th>안전상태</th><td>'+ck(sn===0)+' 양호 &nbsp;'+ck(sn===1)+' 주의관찰 &nbsp;'+ck(sn===2)+' 지정검토</td></tr>';
+ h+='<tr><th>긴급안전점검</th><td>'+ck(O[0]===0)+' 필요 '+ck(O[0]===1)+' 불필요</td><th>중대결함</th><td>'+ck(O[1]===0)+' 있음 &nbsp;'+ck(O[1]===1)+' 없음</td></tr>';
+ h+='<tr><th>정밀안전진단</th><td>'+ck(O[2]===0)+' 필요 '+ck(O[2]===1)+' 불필요</td><th>안전조치</th><td>'+ck(O[3]===0)+' 필요 &nbsp;'+ck(O[3]===1)+' 불필요</td></tr>';
+ h+='<tr><th>종합의견 및<br>특기사항</th><td colspan="4" class="l" style="height:16mm">'+esc(S.sum).replace(/\n/g,"<br>")+'</td></tr></table></div></div>';
+ if(PM==="ph")h="";
+ var ph=[];S.ph.forEach(function(p,k){if(p)ph.push({p:p,n:k+1})});
+ for(var a=0;PM!=="chk"&&a<ph.length;a+=6){h+='<div class="pg"><h4>'+C+'.2 사진대지</h4><div class="pgrid">';
+  for(var j=0;j<6;j++){var e=ph[a+j];if(!e){h+='<div class="box"></div>';continue}
+   h+='<div class="box"><table><colgroup><col style="width:23%"><col style="width:11%"><col style="width:66%"></colgroup><tr><td colspan="2">▣ 사진대지-'+e.n+'</td><td>촬영일자 : '+esc(fd(e.p.date))+'</td></tr><tr><td>과업명</td><td colspan="2">3종 시설물 실태조사</td></tr><tr><td>촬영내용</td><td colspan="2">'+esc(S.nt[e.n-1])+'</td></tr><tr><td colspan="3" class="pic"><img src="'+e.p.d+'" alt="사진대지-'+e.n+'"></td></tr></table></div>'}
+  h+='</div></div>'}
+ $("pr").innerHTML=h;fitP1()}
+function fitP1(){var pr=$("pr"),e=document.getElementById("p1");if(!e)return;var st=pr.style;
+ st.display="block";st.position="absolute";st.left="-10000px";st.top="0";st.width="186mm";
+ e.style.zoom=1;var hh=e.offsetHeight,k=Math.min(1,1010/hh);e.style.zoom=k;
+ st.display="";st.position="";st.left="";st.top="";st.width=""}
+function doPrint(m){PM=m||"all";if(m==="ph"&&!S.ph.some(Boolean)){alert("촬영한 사진이 없습니다.");PM="all";return}renderPrint();window.print()}
+window.addEventListener("afterprint",function(){PM="all"});
 window.addEventListener("beforeprint",renderPrint);
 if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})})}
 init();
