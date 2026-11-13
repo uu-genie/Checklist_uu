@@ -73,7 +73,7 @@ select{width:100%;font:inherit;font-size:12px;color:var(--tx);background:var(--b
 </head>
 <body>
 <div id="list" class="w"><h1>3종시설물 실태조사</h1><div class="sub">건물별로 자동 저장됩니다. 건물을 눌러 이어서 수정할 수 있습니다.</div>
-<div class="row"><button class="b" id="newb">＋ 새 건물</button><button class="b" id="allb">전체 PDF 만들기</button></div>
+<div class="row"><button class="b" id="newb">＋ 새 건물</button><button class="b" id="allb">전체 PDF 만들기</button><button class="b" id="allh">전체 HWPX 만들기</button></div>
 <div id="lst"></div>
 <div class="c"><h2>저장 공간</h2><div class="sub" id="stg">확인 중…</div><div class="row"><button class="b" id="perb" style="flex:0 0 auto;padding:6px 12px;font-size:13px">자동 삭제 방지 요청</button></div></div>
 <div class="c"><h2>백업</h2><div class="sub">폰을 바꾸거나 브라우저 데이터를 지우기 전에 파일로 저장해 두세요.</div>
@@ -107,7 +107,7 @@ select{width:100%;font:inherit;font-size:12px;color:var(--tx);background:var(--b
 </div>
 
 <div id="pr"></div>
-<div id="bar" style="display:none"><span>종합점수 <b id="s2">–</b></span><button id="pdfb" class="b" style="flex:0 0 auto;padding:10px 14px" onclick="pdfBtn()">PDF 만들기</button><button id="prb" class="b" style="flex:0 0 auto;padding:10px 14px" onclick="doPrint('all')">인쇄</button></div>
+<div id="bar" style="display:none"><span>종합점수 <b id="s2">–</b></span><button id="pdfb" class="b" style="flex:0 0 auto;padding:10px 14px" onclick="pdfBtn()">PDF 만들기</button><button id="hwb" class="b" style="flex:0 0 auto;padding:10px 14px">HWPX 만들기</button><button id="prb" class="b" style="flex:0 0 auto;padding:10px 14px" onclick="doPrint('all')">인쇄</button></div>
 
 <script>
 var ITEMS=["시설물 주변의 지반 침하 또는 이로 인한 건물의 기울음, 균열 상태","구조부재의 균열, 누수 상태","구조부재의 변형(처짐, 기울음, 단면손실 등) 상태","구조부재의 철근 부식, 노출 또는 콘크리트 박리·박락 상태","철골부재의 접합부 상태 (볼트 풀림, 누락, 탈락, 용접불량)","철골부재의 변형(기울음, 좌굴 등) 상태","철골부재의 부식 또는 부재 미시공, 단면손실 상태"];
@@ -194,10 +194,10 @@ function ttl(){var I=S.info;return(I.no?I.no+" · ":"")+(I.name||"새 건물")}
 function summ(){var sc=calc(),I=S.info;return{id:S.id,name:I.name||"",no:I.no||"",date:I.date||"",ph:S.ph.filter(Boolean).length,sc:sc===null?null:+sc.toFixed(2),st:sc===null?"":stateOf(sc)[0],upd:Date.now()}}
 function flush(){clearTimeout(svT);if(!S||!dirty)return Promise.resolve();dirty=false;var t=$("ttl");if(t)t.textContent=ttl();
  return dbPut(S,summ()).catch(function(e){dirty=true;alert("저장에 실패했습니다. 사진을 줄이거나 백업 후 다시 시도해 주세요. ("+(e&&e.name||e)+")")})}
-function save(){PDF=null;var pb=$("pdfb");if(pb)pb.textContent="PDF 만들기";dirty=true;clearTimeout(svT);svT=setTimeout(flush,350)}
+function save(){PDF=null;HX=null;var hq=$("hwb");if(hq)hq.textContent="HWPX 만들기";var pb=$("pdfb");if(pb)pb.textContent="PDF 만들기";dirty=true;clearTimeout(svT);svT=setTimeout(flush,350)}
 function view(v){$("list").style.display=v==="list"?"":"none";$("edit").style.display=v==="edit"?"":"none";$("bar").style.display=v==="edit"?"":"none"}
-async function showList(){await flush();S=null;BK=null;LP={};ALLP=null;$("allb").textContent="전체 PDF 만들기";$("expb").textContent="전체 백업 만들기";var a=await dbAll();a.sort(function(x,y){return y.upd-x.upd});
- $("lst").innerHTML=a.length?a.map(function(m){return'<div class="c"><div data-o="'+m.id+'" style="cursor:pointer"><div class="it">'+esc((m.no?m.no+" · ":"")+(m.name||"(이름 없음)"))+'</div><div class="sub">'+esc(m.date||"")+' · 사진 '+m.ph+'/10'+(m.sc!==null&&m.sc!==undefined?' · '+m.sc.toFixed(2)+'점 '+esc(m.st):' · 미평가')+'</div></div><div class="row"><button class="b" data-o="'+m.id+'">열기</button><button class="b" data-cp="'+m.id+'">복제</button><button class="b" data-pf="'+m.id+'">PDF</button><button class="b" data-dl="'+m.id+'">삭제</button></div></div>'}).join(""):'<div class="c sub">저장된 건물이 없습니다. “＋ 새 건물”을 눌러 시작하세요.</div>';
+async function showList(){await flush();S=null;BK=null;LP={};ALLP=null;LH={};ALLH=null;$("allh").textContent="전체 HWPX 만들기";$("allb").textContent="전체 PDF 만들기";$("expb").textContent="전체 백업 만들기";var a=await dbAll();a.sort(function(x,y){return y.upd-x.upd});
+ $("lst").innerHTML=a.length?a.map(function(m){return'<div class="c"><div data-o="'+m.id+'" style="cursor:pointer"><div class="it">'+esc((m.no?m.no+" · ":"")+(m.name||"(이름 없음)"))+'</div><div class="sub">'+esc(m.date||"")+' · 사진 '+m.ph+'/10'+(m.sc!==null&&m.sc!==undefined?' · '+m.sc.toFixed(2)+'점 '+esc(m.st):' · 미평가')+'</div></div><div class="row"><button class="b" data-o="'+m.id+'">열기</button><button class="b" data-cp="'+m.id+'">복제</button><button class="b" data-pf="'+m.id+'">PDF</button><button class="b" data-hf="'+m.id+'">HWPX</button><button class="b" data-dl="'+m.id+'">삭제</button></div></div>'}).join(""):'<div class="c sub">저장된 건물이 없습니다. “＋ 새 건물”을 눌러 시작하세요.</div>';
  view("list");window.scrollTo(0,0);stgInfo(a.length)}
 function openS(s){S=fixS(s);PDF=null;$("pdfb").textContent="PDF 만들기";renderInfo();renderItems();renderRes();$("sum").value=S.sum;$("sumsel").selectedIndex=0;$("t1").value=S.t1;$("t2").value=S.t2;$("ttl").textContent=ttl();view("edit");window.scrollTo(0,0)}
 async function openB(id){var r=await dbGet(id);if(r)openS(r)}
@@ -209,6 +209,16 @@ function stgInfo(n){if(n!==undefined)SN=n;var el=$("stg");if(!navigator.storage|
   if(navigator.storage.persisted)navigator.storage.persisted().then(function(p){el.textContent=t+" · 자동 삭제 방지: "+(p?"설정됨":"설정 안 됨")})
  }).catch(function(){el.textContent="건물 "+SN+"건 · 저장 공간 정보를 읽지 못했습니다."})}
 function initOnce(){fillSum();
+ $("allh").onclick=async function(){var b=$("allh");if(ALLH){sendFile(ALLH);return}
+  var a=await dbAll();if(!a.length){$("bmsg").textContent="저장된 건물이 없습니다.";return}
+  var nk=function(m){var n=parseFloat(m.no);return isNaN(n)?1e9:n};a.sort(function(x,y){return nk(x)-nk(y)||String(x.name).localeCompare(String(y.name))});
+  b.disabled=true;var rs=[];
+  try{for(var i=0;i<a.length;i++){b.textContent="준비 중… ("+(i+1)+"/"+a.length+")";var r=await dbGet(a[i].id);if(r)rs.push(r)}
+   b.textContent="만드는 중…";var bl=await buildHwpx(rs);ALLH={blob:bl,name:"실태조사_전체_"+td().replace(/\D/g,"")+".hwpx",url:""};b.textContent="전체 HWPX 열기·공유 ("+a.length+"건)"}
+  catch(e){alert("HWPX 생성 중 오류가 발생했습니다: "+e.message);b.textContent="전체 HWPX 만들기"}
+  b.disabled=false};
+ $("hwb").onclick=async function(){var b=$("hwb");if(HX){sendFile(HX);return}b.textContent="만드는 중…";b.disabled=true;
+  try{var bl=await buildHwpx([S]);HX={blob:bl,name:hn(S),url:""};b.textContent="HWPX 열기·공유"}catch(e){alert("HWPX 생성 중 오류가 발생했습니다: "+e.message);b.textContent="HWPX 만들기"}b.disabled=false};
  $("allb").onclick=async function(){var b=$("allb");if(ALLP){sendPdf(ALLP);return}
   var a=await dbAll();if(!a.length){$("bmsg").textContent="저장된 건물이 없습니다.";return}
   if(a.length>15&&!confirm("건물이 "+a.length+"건입니다. 한 번에 만들면 시간이 오래 걸리고 폰 메모리가 부족할 수 있습니다. 계속할까요?"))return;
@@ -227,8 +237,11 @@ function initOnce(){fillSum();
  $("back").onclick=function(){showList()};
  $("newb").onclick=function(){var n=blank();n.id=nid();openS(n)};
  $("reset").onclick=async function(){if(confirm("이 건물의 입력 내용과 사진을 모두 삭제할까요? 되돌릴 수 없습니다.")){var id=S.id;dirty=false;clearTimeout(svT);await dbDel(id);showList()}};
- $("lst").onclick=async function(e){var t=e.target.closest("[data-o],[data-cp],[data-dl],[data-pf]");if(!t)return;var d=t.dataset;
+ $("lst").onclick=async function(e){var t=e.target.closest("[data-o],[data-cp],[data-dl],[data-pf],[data-hf]");if(!t)return;var d=t.dataset;
   if(d.o)return openB(d.o);
+  if(d.hf){if(LH[d.hf]){sendFile(LH[d.hf]);return}t.textContent="만드는 중…";t.disabled=true;
+   try{var r1=await dbGet(d.hf),hb=await buildHwpx([r1]);LH[d.hf]={blob:hb,name:hn(r1),url:""};t.textContent="HWPX 열기·공유"}catch(er){alert("HWPX 생성 중 오류가 발생했습니다: "+er.message);t.textContent="HWPX"}
+   t.disabled=false;return}
   if(d.pf){if(LP[d.pf]){sendPdf(LP[d.pf]);return}t.textContent="만드는 중…";t.disabled=true;
    try{var r0=await dbGet(d.pf),pg=await recPages(r0),bl=buildPdf(pg);LP[d.pf]={blob:bl,name:pn(r0),url:URL.createObjectURL(bl),pg:pg};t.textContent="PDF 열기·공유"}catch(er){alert("PDF 생성 중 오류가 발생했습니다: "+er.message);t.textContent="PDF"}
    t.disabled=false;return}
@@ -279,7 +292,7 @@ function p1(x,f,dry,ex){ex=ex||0;var I=S.info,C=I.chap===undefined?"5.5":I.chap,
  function cxs(p){var a=[X0],s=0;p.forEach(function(v){s+=v;a.push(X0+W*s/100)});return a}
  function th(c,s,t){return{c:c,s:s,t:t,b:1,fill:"#e6e6e6",sz:sz}}
  function td(c,s,t,al){return{c:c,s:s,t:t,al:al,sz:sz}}
- function row(cx,cs,mh,ad){var h=mh;cs.forEach(function(c){h=Math.max(h,nh(x,c.t,cx[c.c+c.s]-cx[c.c],c))});h+=ad||0;if(!dry)cs.forEach(function(c){cell(x,cx[c.c],y,cx[c.c+c.s]-cx[c.c],h,c.t,c)});y+=h;return h}
+ function row(cx,cs,mh,ad){var h=mh;cs.forEach(function(c){h=Math.max(h,nh(x,c.t,cx[c.c+c.s]-cx[c.c],c))});h+=ad||0;if(!dry)cs.forEach(function(c){cell(x,cx[c.c],y,cx[c.c+c.s]-cx[c.c],h,c.t,c)});y+=h;if(RH)RH.push(h);return h}
  function sp(cx,c,y0,h,t){if(!dry)cell(x,cx[c],y0,cx[c+1]-cx[c],h,t,th(0,1,t))}
  if(!dry){x.fillStyle="#000";x.textAlign="left";x.font="bold 4.94px "+PDFF;x.fillText(C+" "+(I.name||""),12,15.5);x.font="bold 3.88px "+PDFF;x.fillText(C+".1 개요 및 체크리스트",12,21.5)}
  var cx=cxs([9,10,20,12,17,9,8,15]),y1=y;
@@ -336,6 +349,99 @@ async function makePdf(){var b=$("pdfb");b.textContent="만드는 중…";b.disa
 function showPages(P){P=P||PDF;var o=document.createElement("div");o.style.cssText="position:fixed;top:0;left:0;right:0;bottom:0;z-index:99;background:#222;overflow:auto;padding:calc(12px + env(safe-area-inset-top,0px)) 12px 40px";
  o.innerHTML='<div style="color:#fff;margin-bottom:10px">각 쪽 이미지를 길게 눌러 <b>사진에 저장</b> 또는 <b>공유</b>를 선택하세요.</div><button class="b" id="pgx" style="margin-bottom:10px">닫기</button>'+P.pg.map(function(d,i){return'<img src="'+d+'" alt="'+(i+1)+'쪽" style="width:100%;display:block;margin-bottom:10px;background:#fff">'}).join("");
  document.body.appendChild(o);o.querySelector("#pgx").onclick=function(){o.remove()}}
+var RH=null,LH={},ALLH=null,HX=null;
+var HU=function(mm){return Math.round(mm*283.465)};
+var NSD='xmlns:ha="http://www.hancom.co.kr/hwpml/2011/app" xmlns:hp="http://www.hancom.co.kr/hwpml/2011/paragraph" xmlns:hp10="http://www.hancom.co.kr/hwpml/2016/paragraph" xmlns:hs="http://www.hancom.co.kr/hwpml/2011/section" xmlns:hc="http://www.hancom.co.kr/hwpml/2011/core" xmlns:hh="http://www.hancom.co.kr/hwpml/2011/head" xmlns:hhs="http://www.hancom.co.kr/hwpml/2011/history" xmlns:hm="http://www.hancom.co.kr/hwpml/2011/master-page" xmlns:hpf="http://www.hancom.co.kr/schema/2011/hpf" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf/" xmlns:ooxmlchart="http://www.hancom.co.kr/hwpml/2016/ooxmlchart" xmlns:hwpunitchar="http://www.hancom.co.kr/hwpml/2016/HwpUnitChar" xmlns:epub="http://www.idpf.org/2007/ops" xmlns:config="urn:oasis:names:tc:opendocument:xmlns:config:1.0"';
+var XH='<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>';
+var CRCT=null;
+function crc32(u){if(!CRCT){CRCT=[];for(var n=0;n<256;n++){var c=n;for(var k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;CRCT[n]=c>>>0}}var r=0xFFFFFFFF;for(var i=0;i<u.length;i++)r=CRCT[(r^u[i])&255]^(r>>>8);return(r^0xFFFFFFFF)>>>0}
+function zipStore(fs){var enc=new TextEncoder(),parts=[],cd=[],off=0;
+ function w16(a,v){a.push(v&255,(v>>8)&255)}function w32(a,v){a.push(v&255,(v>>>8)&255,(v>>>16)&255,(v>>>24)&255)}
+ fs.forEach(function(f){var nm=enc.encode(f.name),d=typeof f.data==="string"?enc.encode(f.data):f.data,c=crc32(d),h=[];
+  w32(h,0x04034b50);w16(h,20);w16(h,0x0800);w16(h,0);w16(h,0);w16(h,0x21);w32(h,c);w32(h,d.length);w32(h,d.length);w16(h,nm.length);w16(h,0);
+  parts.push(new Uint8Array(h),nm,d);
+  var e=[];w32(e,0x02014b50);w16(e,20);w16(e,20);w16(e,0x0800);w16(e,0);w16(e,0);w16(e,0x21);w32(e,c);w32(e,d.length);w32(e,d.length);w16(e,nm.length);w16(e,0);w16(e,0);w16(e,0);w16(e,0);w32(e,0);w32(e,off);
+  cd.push(new Uint8Array(e),nm);off+=h.length+nm.length+d.length});
+ var cs=0;cd.forEach(function(p){cs+=p.length});var z=[];w32(z,0x06054b50);w16(z,0);w16(z,0);w16(z,fs.length);w16(z,fs.length);w32(z,cs);w32(z,off);w16(z,0);
+ return new Blob(parts.concat(cd,[new Uint8Array(z)]),{type:"application/hwp+zip"})}
+async function chkLay(T,Tf){T=T||287;Tf=Tf||T;var m=mkc(),x=m[1],f=1;while(f>.6&&p1(x,f,true)>Tf)f-=.04;var ex=Math.max(0,T-p1(x,f,true));RH=[];p1(x,f,true,ex);var r=RH;RH=null;return{f:f,rows:r}}
+var SECPR='<hp:secPr id="" textDirection="HORIZONTAL" spaceColumns="1134" tabStop="8000" tabStopVal="4000" tabStopUnit="HWPUNIT" outlineShapeIDRef="1" memoShapeIDRef="0" textVerticalWidthHead="0" masterPageCnt="0"><hp:grid lineGrid="0" charGrid="0" wonggojiFormat="0"/><hp:startNum pageStartsOn="BOTH" page="0" pic="0" tbl="0" equation="0"/><hp:visibility hideFirstHeader="0" hideFirstFooter="0" hideFirstMasterPage="0" border="SHOW_ALL" fill="SHOW_ALL" hideFirstPageNum="0" hideFirstEmptyLine="0" showLineNumber="0"/><hp:lineNumberShape restartType="0" countBy="0" distance="0" startNumber="0"/><hp:pagePr landscape="WIDELY" width="59528" height="84188" gutterType="LEFT_ONLY"><hp:margin header="0" footer="0" gutter="0" left="3402" right="3402" top="2835" bottom="2835"/></hp:pagePr><hp:footNotePr><hp:autoNumFormat type="DIGIT" userChar="" prefixChar="" suffixChar=")" supscript="0"/><hp:noteLine length="-1" type="SOLID" width="0.12 mm" color="#000000"/><hp:noteSpacing betweenNotes="283" belowLine="567" aboveLine="850"/><hp:numbering type="CONTINUOUS" newNum="1"/><hp:placement place="EACH_COLUMN" beneathText="0"/></hp:footNotePr><hp:endNotePr><hp:autoNumFormat type="DIGIT" userChar="" prefixChar="" suffixChar=")" supscript="0"/><hp:noteLine length="14692344" type="SOLID" width="0.12 mm" color="#000000"/><hp:noteSpacing betweenNotes="0" belowLine="567" aboveLine="850"/><hp:numbering type="CONTINUOUS" newNum="1"/><hp:placement place="END_OF_DOCUMENT" beneathText="0"/></hp:endNotePr>'+["BOTH","EVEN","ODD"].map(function(t){return'<hp:pageBorderFill type="'+t+'" borderFillIDRef="1" textBorder="PAPER" headerInside="0" footerInside="0" fillArea="PAPER"><hp:offset left="1417" right="1417" top="1417" bottom="1417"/></hp:pageBorderFill>'}).join("")+'</hp:secPr><hp:ctrl><hp:colPr id="" type="NEWSPAPER" layout="LEFT" colCount="1" sameSz="1" sameGap="0"/></hp:ctrl>';
+function hwHeader(cps){var ff=["HANGUL","LATIN","HANJA","JAPANESE","OTHER","SYMBOL","USER"].map(function(l){return'<hh:fontface lang="'+l+'" fontCnt="1"><hh:font id="0" face="함초롬돋움" type="TTF" isEmbedded="0"><hh:typeInfo familyType="FCAT_GOTHIC" weight="6" proportion="4" contrast="0" strokeVariation="1" armStyle="1" letterform="1" midline="1" xHeight="1"/></hh:font></hh:fontface>'}).join("");
+ var bd=function(t){return'<hh:'+t+'Border type="SOLID" width="0.12 mm" color="#000000"/>'},nb=function(t){return'<hh:'+t+'Border type="NONE" width="0.1 mm" color="#000000"/>'},sl='<hh:slash type="NONE" Crooked="0" isCounter="0"/><hh:backSlash type="NONE" Crooked="0" isCounter="0"/>',dg='<hh:diagonal type="SOLID" width="0.1 mm" color="#000000"/>';
+ var bf='<hh:borderFill id="1" threeD="0" shadow="0" centerLine="NONE" breakCellSeparateLine="0">'+sl+["left","right","top","bottom"].map(nb).join("")+dg+'</hh:borderFill>'
+  +'<hh:borderFill id="2" threeD="0" shadow="0" centerLine="NONE" breakCellSeparateLine="0">'+sl+["left","right","top","bottom"].map(bd).join("")+dg+'</hh:borderFill>'
+  +'<hh:borderFill id="3" threeD="0" shadow="0" centerLine="NONE" breakCellSeparateLine="0">'+sl+["left","right","top","bottom"].map(bd).join("")+dg+'<hc:fillBrush><hc:winBrush faceColor="#E6E6E6" hatchColor="#000000" alpha="0"/></hc:fillBrush></hh:borderFill>';
+ var all=function(t,v){return'<hh:'+t+' hangul="'+v+'" latin="'+v+'" hanja="'+v+'" japanese="'+v+'" other="'+v+'" symbol="'+v+'" user="'+v+'"/>'};
+ var cpx=function(id,h,b){return'<hh:charPr id="'+id+'" height="'+h+'" textColor="#000000" shadeColor="none" useFontSpace="0" useKerning="0" symMark="NONE" borderFillIDRef="1">'+all("fontRef",0)+all("ratio",100)+all("spacing",0)+all("relSz",100)+all("offset",0)+(b?'<hh:bold/>':'')+'<hh:underline type="NONE" shape="SOLID" color="#000000"/><hh:strikeout shape="NONE" color="#000000"/><hh:outline type="NONE"/><hh:shadow type="NONE" color="#B2B2B2" offsetX="10" offsetY="10"/></hh:charPr>'};
+ var ks=Object.keys(cps.m),cpr=cpx(0,1000,0)+ks.map(function(k){var o=cps.m[k];return cpx(o.id,o.sz,o.b)}).join("");
+ var ppx=function(id,al,pb){return'<hh:paraPr id="'+id+'" tabPrIDRef="0" condense="0" fontLineHeight="0" snapToGrid="1" suppressLineNumbers="0" checked="0"><hh:align horizontal="'+al+'" vertical="BASELINE"/><hh:heading type="NONE" idRef="0" level="0"/><hh:breakSetting breakLatinWord="KEEP_WORD" breakNonLatinWord="KEEP_WORD" widowOrphan="0" keepWithNext="0" keepLines="0" pageBreakBefore="'+(pb?1:0)+'" lineWrap="BREAK"/><hh:autoSpacing eAsianEng="0" eAsianNum="0"/><hh:margin><hc:intent value="0" unit="HWPUNIT"/><hc:left value="0" unit="HWPUNIT"/><hc:right value="0" unit="HWPUNIT"/><hc:prev value="0" unit="HWPUNIT"/><hc:next value="0" unit="HWPUNIT"/></hh:margin><hh:lineSpacing type="PERCENT" value="120" unit="HWPUNIT"/><hh:border borderFillIDRef="1" offsetLeft="0" offsetRight="0" offsetTop="0" offsetBottom="0" connect="0" ignoreMargin="0"/></hh:paraPr>'};
+ var nm='<hh:numbering id="1" start="0">'+[1,2,3,4,5,6,7].map(function(l){return'<hh:paraHead start="1" level="'+l+'" align="LEFT" useInstWidth="1" autoIndent="1" widthAdjust="0" textOffsetType="PERCENT" textOffset="50" numFormat="DIGIT" charPrIDRef="4294967295" checkable="0">^'+l+'.</hh:paraHead>'}).join("")+'</hh:numbering>';
+ return XH+'<hh:head '+NSD+' version="1.4" secCnt="1"><hh:beginNum page="1" footnote="1" endnote="1" pic="1" tbl="1" equation="1"/><hh:refList><hh:fontfaces itemCnt="7">'+ff+'</hh:fontfaces><hh:borderFills itemCnt="3">'+bf+'</hh:borderFills><hh:charProperties itemCnt="'+(ks.length+1)+'">'+cpr+'</hh:charProperties><hh:tabProperties itemCnt="1"><hh:tabPr id="0" autoTabLeft="0" autoTabRight="0"/></hh:tabProperties><hh:numberings itemCnt="1">'+nm+'</hh:numberings><hh:paraProperties itemCnt="3">'+ppx(0,"CENTER")+ppx(1,"LEFT")+ppx(2,"LEFT",1)+'</hh:paraProperties><hh:styles itemCnt="1"><hh:style id="0" type="PARA" name="바탕글" engName="Normal" paraPrIDRef="0" charPrIDRef="0" nextStyleIDRef="0" langID="1042" lockForm="0"/></hh:styles></hh:refList><hh:compatibleDocument targetProgram="HWP2018"><hh:layoutCompatibility/></hh:compatibleDocument><hh:docOption><hh:linkinfo path="" pageInherit="0" footnoteInherit="0"/></hh:docOption><hh:trackchangeConfig flags="56"/></hh:head>'}
+function imgDims(u){return new Promise(function(r){var im=new Image();im.onload=function(){r([im.naturalWidth,im.naturalHeight])};im.onerror=function(){r([4,3])};im.src=u})}
+async function buildHwpx(recs){var keep=S,cps={n:1,m:{}},imgs=[],paras=[],uid=1000,first=true,title="실태조사";
+ function cp(sz,b){var k=sz+"_"+(b?1:0);if(!cps.m[k])cps.m[k]={id:cps.n++,sz:sz,b:b};return cps.m[k].id}
+ function tx(t,c){return'<hp:run charPrIDRef="'+c+'"><hp:t>'+esc(t)+'</hp:t></hp:run>'}
+ function cpar(t,pp,c){return'<hp:p id="'+(uid++)+'" paraPrIDRef="'+pp+'" styleIDRef="0" pageBreak="0" columnBreak="0" merged="0">'+(t===""?'<hp:run charPrIDRef="'+c+'"><hp:t/></hp:run>':tx(t,c))+'</hp:p>'}
+ function pa(runs,pp,start){var h='<hp:p id="'+(uid++)+'" paraPrIDRef="'+(start&&!first?2:pp)+'" styleIDRef="0" pageBreak="0" columnBreak="0" merged="0">'+(first?'<hp:run charPrIDRef="0">'+SECPR+'</hp:run>':'')+runs+'</hp:p>';first=false;return h}
+ function cols(pct){var t=HU(186),a=[],s=0;pct.forEach(function(v,i){var w=i<pct.length-1?Math.round(t*v/100):t-s;a.push(w);s+=w});return a}
+ function tbl(cw,rh,rows){var W=cw.reduce(function(a,b){return a+b},0),H=rh.reduce(function(a,b){return a+b},0);
+  var h='<hp:tbl id="'+(uid++)+'" zOrder="0" numberingType="TABLE" textWrap="TOP_AND_BOTTOM" textFlow="BOTH_SIDES" lock="0" dropcapstyle="None" pageBreak="CELL" repeatHeader="0" rowCnt="'+rh.length+'" colCnt="'+cw.length+'" cellSpacing="0" borderFillIDRef="2" noAdjust="0"><hp:sz width="'+W+'" widthRelTo="ABSOLUTE" height="'+H+'" heightRelTo="ABSOLUTE" protect="0"/><hp:pos treatAsChar="1" affectLSpacing="0" flowWithText="1" allowOverlap="0" holdAnchorAndSO="0" vertRelTo="PARA" horzRelTo="PARA" vertAlign="TOP" horzAlign="LEFT" vertOffset="0" horzOffset="0"/><hp:outMargin left="0" right="0" top="0" bottom="0"/><hp:inMargin left="141" right="141" top="141" bottom="141"/>';
+  rows.forEach(function(row){h+='<hp:tr>';row.forEach(function(x){var cs=x.cs||1,rs=x.rs||1,w=0,hh=0,i;for(i=0;i<cs;i++)w+=cw[x.c+i];for(i=0;i<rs;i++)hh+=rh[x.r+i];
+   var c=cp(x.sz,x.b),pp=x.al==="l"?1:0,body=x.pic?x.pic:String(x.t==null?"":x.t).split("\n").map(function(l){return cpar(l,pp,c)}).join("");
+   h+='<hp:tc name="" header="0" hasMargin="0" protect="0" editable="0" dirty="0" borderFillIDRef="'+(x.fill?3:2)+'"><hp:subList id="" textDirection="HORIZONTAL" lineWrap="BREAK" vertAlign="CENTER" linkListIDRef="0" linkListNextIDRef="0" textWidth="0" textHeight="0" hasTextRef="0" hasNumRef="0">'+body+'</hp:subList><hp:cellAddr colAddr="'+x.c+'" rowAddr="'+x.r+'"/><hp:cellSpan colSpan="'+cs+'" rowSpan="'+rs+'"/><hp:cellSz width="'+w+'" height="'+hh+'"/><hp:cellMargin left="141" right="141" top="141" bottom="141"/></hp:tc>'});h+='</hp:tr>'});
+  return'<hp:run charPrIDRef="0">'+h+'</hp:tbl><hp:t/></hp:run>'}
+ function picP(bytes,pw,ph){var n=imgs.length+1,s=Math.min(70/pw,55/ph),dw=HU(pw*s),dh=HU(ph*s);imgs.push({name:"image"+n+".jpg",data:bytes});
+  return'<hp:p id="'+(uid++)+'" paraPrIDRef="0" styleIDRef="0" pageBreak="0" columnBreak="0" merged="0"><hp:run charPrIDRef="0"><hp:pic id="'+(uid++)+'" zOrder="0" numberingType="PICTURE" textWrap="TOP_AND_BOTTOM" textFlow="BOTH_SIDES" lock="0" dropcapstyle="None" href="" groupLevel="0" instid="'+(uid++)+'" reverse="0"><hp:offset x="0" y="0"/><hp:orgSz width="'+dw+'" height="'+dh+'"/><hp:curSz width="'+dw+'" height="'+dh+'"/><hp:flip horizontal="0" vertical="0"/><hp:rotationInfo angle="0" centerX="'+(dw>>1)+'" centerY="'+(dh>>1)+'" rotateimage="1"/><hp:renderingInfo><hc:transMatrix e1="1" e2="0" e3="0" e4="0" e5="1" e6="0"/><hc:scaMatrix e1="1" e2="0" e3="0" e4="0" e5="1" e6="0"/><hc:rotMatrix e1="1" e2="0" e3="0" e4="0" e5="1" e6="0"/></hp:renderingInfo><hp:imgRect><hc:pt0 x="0" y="0"/><hc:pt1 x="'+dw+'" y="0"/><hc:pt2 x="'+dw+'" y="'+dh+'"/><hc:pt3 x="0" y="'+dh+'"/></hp:imgRect><hp:imgClip left="0" right="'+dw+'" top="0" bottom="'+dh+'"/><hp:inMargin left="0" right="0" top="0" bottom="0"/><hp:imgDim dimwidth="'+dw+'" dimheight="'+dh+'"/><hc:img binaryItemIDRef="image'+n+'" bright="0" contrast="0" effect="REAL_PIC" alpha="0"/><hp:effects/><hp:sz width="'+dw+'" widthRelTo="ABSOLUTE" height="'+dh+'" heightRelTo="ABSOLUTE" protect="0"/><hp:pos treatAsChar="1" affectLSpacing="0" flowWithText="0" allowOverlap="0" holdAnchorAndSO="0" vertRelTo="PARA" horzRelTo="PARA" vertAlign="TOP" horzAlign="LEFT" vertOffset="0" horzOffset="0"/><hp:outMargin left="0" right="0" top="0" bottom="0"/></hp:pic><hp:t/></hp:run></hp:p>'}
+ try{for(var ri=0;ri<recs.length;ri++){S=fixS(recs[ri]);var I=S.info,C=I.chap===undefined?"5.5":I.chap,L=await chkLay(270,266),sz=Math.round(850*L.f),R=L.rows.map(HU);if(ri===0)title=(I.name||"실태조사");
+  var th=function(c,r,t,cs,rs){return{c:c,r:r,t:t,cs:cs,rs:rs,b:1,fill:1,sz:sz}},td=function(c,r,t,al,cs,rs){return{c:c,r:r,t:t,al:al,cs:cs,rs:rs,sz:sz}};
+  var sc=calc(),sn=sc===null?-1:["양호","주의관찰","지정검토"].indexOf(stateOf(sc)[0]),O=S.opt;
+  paras.push(pa(tx(C+" "+(I.name||""),cp(1400,1)),1,true),pa(tx(C+".1 개요 및 체크리스트",cp(1100,1)),1,false));
+var PI=[9,10,20,12,17,9.33,7.67,15],PM2=[22,36,8,5.66,5.66,5.66,5.66,5.66,5.66],PR=[12,16,18,14,40];
+  var infoR=[
+   [th(0,0,"시설물\n정보",1,4),th(1,0,"건물번호"),td(2,0,I.no),th(3,0,"시설물명"),td(4,0,I.name),th(5,0,"조사일시",2),td(7,0,I.date)],
+   [th(1,1,"구분"),td(2,1,I.area),th(3,1,"구조형식"),td(4,1,I.struct),th(5,1,"책임\n기술자",1,3),th(6,1,"성명"),td(7,1,I.en)],
+   [th(1,2,"관리주체"),td(2,2,I.mgr),th(3,2,"연락처"),td(4,2,I.tel),th(6,2,"소속"),td(7,2,I.eo)],
+   [th(1,3,"주소"),td(2,3,I.addr,null,3),th(6,3,"연락처"),td(7,3,I.et)]];
+  var ir=[[th(0,0,"평가항목",1,2),th(1,0,"조사결과",2),th(3,0,"평가결과",6)],[th(1,1,"조사자 의견\n(점검 여건 포함)"),th(2,1,"보수필요\n유무")].concat(GR.map(function(g,i){return th(3+i,1,g[0]+"\n("+g[1]+")")}),[th(8,1,"해당\n없음")])];
+  S.it.forEach(function(it,i){var op=it.op||(it.g==="na"?"해당사항 없음":""),gi=it.g==="na"?5:it.g,r=[td(0,2+i,(i+1)+". "+ITEMS[i],"l"),td(1,2+i,op,"l"),td(2,2+i,it.fix)];for(var j=0;j<6;j++)r.push(td(3+j,2+i,gi===j?"○":""));ir.push(r)});
+  var resR=[
+   [th(0,0,"평가결과",1,3),th(1,0,"종합점수"),td(2,0,sc===null?"":sc.toFixed(2)+" 점"),th(3,0,"안전상태"),td(4,0,ck(sn===0)+" 양호  "+ck(sn===1)+" 주의관찰  "+ck(sn===2)+" 지정검토")],
+   [th(1,1,"긴급안전점검"),td(2,1,ck(O[0]===0)+" 필요 "+ck(O[0]===1)+" 불필요"),th(3,1,"중대결함"),td(4,1,ck(O[1]===0)+" 있음  "+ck(O[1]===1)+" 없음")],
+   [th(1,2,"정밀안전진단"),td(2,2,ck(O[2]===0)+" 필요 "+ck(O[2]===1)+" 불필요"),th(3,2,"안전조치"),td(4,2,ck(O[3]===0)+" 필요  "+ck(O[3]===1)+" 불필요")],
+   [th(0,3,"종합의견 및\n특기사항"),td(1,3,S.sum,"l",4)]];
+  var T=HU(186),cum=function(p){var a=[0],s=0;p.forEach(function(v){s+=v;a.push(Math.round(T*s/100))});a[a.length-1]=T;return a};
+  var u=[0,T];[PI,PM2,PR].forEach(function(p){cum(p).forEach(function(v){u.push(v)})});u.sort(function(a,b){return a-b});
+  var ub=[u[0]];u.forEach(function(v){if(v-ub[ub.length-1]>60)ub.push(v)});ub[ub.length-1]=T;
+  var near=function(v){var bi=0;ub.forEach(function(x,i){if(Math.abs(x-v)<Math.abs(ub[bi]-v))bi=i});return bi};
+  var place=function(rows,p,off){var cb=cum(p);rows.forEach(function(row){row.forEach(function(x){var a=near(cb[x.c]),b=near(cb[x.c+(x.cs||1)]);x.c=a;x.cs=b-a;x.r+=off})})};
+  place(infoR,PI,0);place(ir,PM2,4);place(resR,PR,13);
+  var ucw=[];for(var q=0;q<ub.length-1;q++)ucw.push(ub[q+1]-ub[q]);
+  paras.push(pa(tbl(ucw,R,infoR.concat(ir,resR)),1,false));
+  var list=[];S.ph.forEach(function(p,k){if(p)list.push({p:p,n:k+1})});
+  for(var a=0;a<list.length;a+=6){var g=list.slice(a,a+6),pz=900,bw=HU(93),w0=HU(21.39),w1=HU(10.23),cw=[w0,w1,bw-w0-w1,w0,w1,bw-w0-w1],rh=[],rows=[],t9=function(c,r,t,cs){return{c:c,r:r,t:t,cs:cs,sz:pz}};
+   for(var br=0;br<3;br++)rh.push(HU(6.5),HU(6.5),HU(6.5),HU(60));
+   for(br=0;br<3;br++)for(var rt=0;rt<4;rt++){var row=[];for(var bc=0;bc<2;bc++){var e=g[br*2+bc],o=3*bc,r=4*br+rt;
+     if(rt===0)row.push(t9(o,r,e?"▣ 사진대지-"+e.n:"",2),t9(o+2,r,e?"촬영일자 : "+fd(e.p.date):""));
+     else if(rt===1)row.push(t9(o,r,e?"과업명":""),t9(o+1,r,e?"3종 시설물 실태조사":"",2));
+     else if(rt===2)row.push(t9(o,r,e?"촬영내용":""),t9(o+1,r,e?(S.nt[e.n-1]||""):"",2));
+     else{var cell=t9(o,r,"",3);if(e){var d=await imgDims(e.p.d);cell.pic=picP(u8(e.p.d),d[0],d[1])}row.push(cell)}}
+    rows.push(row)}
+   paras.push(pa(tx(C+".2 사진대지",cp(1100,1)),1,true),pa(tbl(cw,rh,rows),1,false))}}
+ }finally{S=keep}
+ var hdr=hwHeader(cps),sec=XH+'<hs:sec '+NSD+'>'+paras.join("")+'</hs:sec>';
+ var man='<opf:item id="header" href="Contents/header.xml" media-type="application/xml"/><opf:item id="section0" href="Contents/section0.xml" media-type="application/xml"/><opf:item id="settings" href="settings.xml" media-type="application/xml"/>'+imgs.map(function(m,i){return'<opf:item id="image'+(i+1)+'" href="BinData/'+m.name+'" media-type="image/jpg" isEmbeded="1"/>'}).join("");
+ var hpf=XH+'<opf:package '+NSD+' version="" unique-identifier="" id=""><opf:metadata><opf:title>'+esc(title)+'</opf:title><opf:language>ko</opf:language></opf:metadata><opf:manifest>'+man+'</opf:manifest><opf:spine><opf:itemref idref="header" linear="yes"/><opf:itemref idref="section0" linear="yes"/></opf:spine></opf:package>';
+ var fl=[{name:"mimetype",data:"application/hwp+zip"},
+  {name:"version.xml",data:XH+'<hv:HCFVersion xmlns:hv="http://www.hancom.co.kr/hwpml/2011/version" tagetApplication="WORDPROCESSOR" major="5" minor="1" micro="0" buildNumber="0" os="1" xmlVersion="1.2" application="Hancom Office Hangul" appVersion="9, 1, 1, 5656 WIN32LEWindows_10"/>'},
+  {name:"settings.xml",data:XH+'<ha:HWPApplicationSetting xmlns:ha="http://www.hancom.co.kr/hwpml/2011/app" xmlns:config="urn:oasis:names:tc:opendocument:xmlns:config:1.0"><ha:CaretPosition listIDRef="0" paraIDRef="0" pos="0"/></ha:HWPApplicationSetting>'},
+  {name:"META-INF/container.xml",data:XH+'<ocf:container xmlns:ocf="urn:oasis:names:tc:opendocument:xmlns:container" xmlns:hpf="http://www.hancom.co.kr/schema/2011/hpf"><ocf:rootfiles><ocf:rootfile full-path="Contents/content.hpf" media-type="application/hwpml-package+xml"/></ocf:rootfiles></ocf:container>'},
+  {name:"META-INF/manifest.xml",data:XH+'<odf:manifest xmlns:odf="urn:oasis:names:tc:opendocument:xmlns:manifest:1.0"/>'},
+  {name:"Contents/content.hpf",data:hpf},{name:"Contents/header.xml",data:hdr},{name:"Contents/section0.xml",data:sec}];
+ imgs.forEach(function(m){fl.push({name:"BinData/"+m.name,data:m.data})});
+ return zipStore(fl)}
+function hn(r){return pn(r).replace(/\.pdf$/,".hwpx")}
+function sendFile(P){if(/\.pdf$/.test(P.name)){sendPdf(P);return}var f=new File([P.blob],P.name,{type:"application/octet-stream"});
+ if(navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f]}).catch(function(e){if(!e||e.name!=="AbortError")dl(P.blob,P.name)})}else dl(P.blob,P.name)}
 function sendPdf(P){var f=new File([P.blob],P.name,{type:"application/pdf"});
  if(navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f]}).catch(function(e){if(!e||e.name!=="AbortError")showPages(P)})}else{var w=null;try{w=window.open(P.url,"_blank")}catch(e){}if(!w)showPages(P)}}
 function pdfBtn(){if(!PDF){makePdf();return}sendPdf(PDF)}
