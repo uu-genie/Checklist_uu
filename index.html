@@ -74,7 +74,11 @@ select{width:100%;font:inherit;font-size:12px;color:var(--tx);background:var(--b
 <body>
 <div id="list" class="w"><h1>3종시설물 실태조사</h1><div class="sub">건물별로 자동 저장됩니다. 건물을 눌러 이어서 수정할 수 있습니다.</div>
 <div class="row"><button class="b" id="newb">＋ 새 건물</button><button class="b" id="allb">전체 PDF 만들기</button><button class="b" id="allh">전체 HWPX 만들기</button></div>
+<div id="pfw" style="display:none;margin:6px 0"><label>프로젝트 보기</label><select id="pf"></select><div class="sub">전체 PDF·HWPX는 선택한 프로젝트의 건물만 만들어요.</div></div>
 <div id="lst"></div>
+<div class="c"><h2>건물 목록 한꺼번에 불러오기</h2><div class="sub">엑셀(.xlsx)이나 CSV 파일로 건물 여러 건을 한 번에 만듭니다.</div>
+<div style="margin-top:8px"><label>프로젝트명 (선택 · 비워 두면 파일의 ‘프로젝트명’ 열을 씁니다)</label><input id="impproj"></div>
+<div class="row"><label class="b" style="cursor:pointer">엑셀/CSV 파일 선택<input type="file" accept=".xlsx,.csv,.txt,text/csv" id="impx" style="display:none"></label><button class="b" id="tplb">양식 받기 (CSV)</button></div><div class="sub" id="xmsg"></div></div>
 <div class="c"><h2>저장 공간</h2><div class="sub" id="stg">확인 중…</div><div class="row"><button class="b" id="perb" style="flex:0 0 auto;padding:6px 12px;font-size:13px">자동 삭제 방지 요청</button></div></div>
 <div class="c"><h2>백업</h2><div class="sub">폰을 바꾸거나 브라우저 데이터를 지우기 전에 파일로 저장해 두세요.</div>
 <div class="row"><button class="b" id="expb">전체 백업 만들기</button><label class="b" style="cursor:pointer">백업 불러오기<input type="file" accept=".json,application/json" id="impf" style="display:none"></label></div><div class="sub" id="bmsg"></div></div>
@@ -112,13 +116,13 @@ select{width:100%;font:inherit;font-size:12px;color:var(--tx);background:var(--b
 <script>
 var ITEMS=["시설물 주변의 지반 침하 또는 이로 인한 건물의 기울음, 균열 상태","구조부재의 균열, 누수 상태","구조부재의 변형(처짐, 기울음, 단면손실 등) 상태","구조부재의 철근 부식, 노출 또는 콘크리트 박리·박락 상태","철골부재의 접합부 상태 (볼트 풀림, 누락, 탈락, 용접불량)","철골부재의 변형(기울음, 좌굴 등) 상태","철골부재의 부식 또는 부재 미시공, 단면손실 상태"];
 var GR=[["a",10],["b",8],["c",5],["d",2],["e",0]];
-var INFO=[["보고서 장 번호 (예: 5.5)","chap","5.5"],["건물번호","no",""],["시설물명","name",""],["조사일시","date",""],["구분(연면적)","area",""],["구조형식","struct",""],["관리주체","mgr",""],["연락처","tel",""],["주소","addr",""],["책임기술자 성명","en",""],["책임기술자 소속","eo",""],["책임기술자 연락처","et",""]];
+var INFO=[["보고서 장 번호 (예: 5.5)","chap","5.5"],["프로젝트명 (목록 구분용)","proj",""],["건물번호","no",""],["시설물명","name",""],["조사일시","date",""],["구분(연면적)","area",""],["구조형식","struct",""],["관리주체","mgr",""],["연락처","tel",""],["주소","addr",""],["책임기술자 성명","en",""],["책임기술자 소속","eo",""],["책임기술자 연락처","et",""]];
 var OPTS=[["긴급안전점검","필요","불필요"],["중대결함","있음","없음"],["정밀안전진단","필요","불필요"],["안전조치","필요","불필요"]];
 var today=new Date().toISOString().slice(0,10).replace(/-/g,".");
 var S=null,db=null,KEY="chk3";
-function blank(){var s={info:{},it:ITEMS.map(function(){return{g:null,fix:"X",op:"",ph:[]}}),opt:[1,1,1,1],sum:"",t1:8,t2:5,ph:[null,null,null,null,null,null,null,null,null,null]};INFO.forEach(function(f){s.info[f[1]]=f[1]=="date"?today:(f[1]=="chap"?"5.5":"")});return s}
+function blank(){var s={info:{},it:ITEMS.map(function(){return{g:null,fix:"X",op:"",ph:[]}}),opt:[1,1,1,1],sum:"",t1:8,t2:5,ph:[null,null,null,null,null,null,null,null,null,null,null,null]};INFO.forEach(function(f){s.info[f[1]]=f[1]=="date"?today:(f[1]=="chap"?"5.5":"")});return s}
 function $(i){return document.getElementById(i)}
-function load(){try{var v=localStorage.getItem(KEY);S=v?JSON.parse(v):blank()}catch(e){S=blank()}if(S.info.chap===undefined)S.info.chap="5.5";if(!S.ph)S.ph=[];while(S.ph.length<10)S.ph.push(null);if(!S.nt)S.nt=[];while(S.nt.length<10)S.nt.push("")}
+function load(){try{var v=localStorage.getItem(KEY);S=v?JSON.parse(v):blank()}catch(e){S=blank()}if(S.info.chap===undefined)S.info.chap="5.5";if(!S.ph)S.ph=[];while(S.ph.length<12)S.ph.push(null);if(!S.nt)S.nt=[];while(S.nt.length<12)S.nt.push("")}
 function calc(){var v=[];S.it.forEach(function(x){if(x.g!==null&&x.g!=="na")v.push(GR[x.g][1])});
  if(!v.length)return null;return v.reduce(function(a,b){return a+b},0)/v.length}
 function stateOf(sc){return sc>=S.t1?["양호","var(--ok)"]:sc>=S.t2?["주의관찰","var(--warn)"]:["지정검토","var(--bad)"]}
@@ -182,7 +186,7 @@ function renderRes(){var sc=calc(),el=$("score"),st=$("state");
  renderSlots()}
 var svT=null,dirty=false,LS=false,dbp=null,BK=null;
 function nid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
-function fixS(s){if(!s.info)s.info={};if(s.info.chap===undefined)s.info.chap="5.5";if(!s.ph)s.ph=[];while(s.ph.length<10)s.ph.push(null);if(!s.nt)s.nt=[];while(s.nt.length<10)s.nt.push("");if(s.t1===undefined)s.t1=8;if(s.t2===undefined)s.t2=5;return s}
+function fixS(s){if(!s.info)s.info={};if(s.info.chap===undefined)s.info.chap="5.5";if(!s.ph)s.ph=[];while(s.ph.length<12)s.ph.push(null);if(!s.nt)s.nt=[];while(s.nt.length<12)s.nt.push("");if(s.t1===undefined)s.t1=8;if(s.t2===undefined)s.t2=5;return s}
 function dbo(){if(dbp)return dbp;dbp=new Promise(function(res,rej){try{var r=indexedDB.open("chk3db",1);r.onupgradeneeded=function(){var d=r.result;d.createObjectStore("b",{keyPath:"id"});d.createObjectStore("i",{keyPath:"id"})};r.onsuccess=function(){res(r.result)};r.onerror=function(){rej(r.error)}}catch(e){rej(e)}});return dbp}
 function tx(st,mode,fn){return dbo().then(function(d){return new Promise(function(res,rej){var t=d.transaction(st,mode),q=fn(t);t.oncomplete=function(){res(q&&q.result)};t.onerror=function(){rej(t.error)};t.onabort=function(){rej(t.error)}})})}
 function lsi(){return JSON.parse(localStorage.getItem("chk3i")||"[]")}
@@ -191,14 +195,16 @@ function dbGet(id){if(LS){var v=localStorage.getItem("chk3b_"+id);return Promise
 function dbPut(r,m){if(LS){try{localStorage.setItem("chk3b_"+r.id,JSON.stringify(r));var a=lsi().filter(function(x){return x.id!==r.id});a.push(m);localStorage.setItem("chk3i",JSON.stringify(a));return Promise.resolve()}catch(e){return Promise.reject(e)}}return tx(["b","i"],"readwrite",function(t){t.objectStore("b").put(r);t.objectStore("i").put(m)})}
 function dbDel(id){if(LS){localStorage.removeItem("chk3b_"+id);localStorage.setItem("chk3i",JSON.stringify(lsi().filter(function(x){return x.id!==id})));return Promise.resolve()}return tx(["b","i"],"readwrite",function(t){t.objectStore("b").delete(id);t.objectStore("i").delete(id)})}
 function ttl(){var I=S.info;return(I.no?I.no+" · ":"")+(I.name||"새 건물")}
-function summ(){var sc=calc(),I=S.info;return{id:S.id,name:I.name||"",no:I.no||"",date:I.date||"",ph:S.ph.filter(Boolean).length,sc:sc===null?null:+sc.toFixed(2),st:sc===null?"":stateOf(sc)[0],upd:Date.now()}}
+function summ(){var sc=calc(),I=S.info;return{id:S.id,proj:I.proj||"",name:I.name||"",no:I.no||"",date:I.date||"",ph:S.ph.filter(Boolean).length,sc:sc===null?null:+sc.toFixed(2),st:sc===null?"":stateOf(sc)[0],upd:Date.now()}}
 function flush(){clearTimeout(svT);if(!S||!dirty)return Promise.resolve();dirty=false;var t=$("ttl");if(t)t.textContent=ttl();
  return dbPut(S,summ()).catch(function(e){dirty=true;alert("저장에 실패했습니다. 사진을 줄이거나 백업 후 다시 시도해 주세요. ("+(e&&e.name||e)+")")})}
 function save(){PDF=null;HX=null;var hq=$("hwb");if(hq)hq.textContent="HWPX 만들기";var pb=$("pdfb");if(pb)pb.textContent="PDF 만들기";dirty=true;clearTimeout(svT);svT=setTimeout(flush,350)}
 function view(v){$("list").style.display=v==="list"?"":"none";$("edit").style.display=v==="edit"?"":"none";$("bar").style.display=v==="edit"?"":"none"}
-async function showList(){await flush();S=null;BK=null;LP={};ALLP=null;LH={};ALLH=null;$("allh").textContent="전체 HWPX 만들기";$("allb").textContent="전체 PDF 만들기";$("expb").textContent="전체 백업 만들기";var a=await dbAll();a.sort(function(x,y){return y.upd-x.upd});
- $("lst").innerHTML=a.length?a.map(function(m){return'<div class="c"><div data-o="'+m.id+'" style="cursor:pointer"><div class="it">'+esc((m.no?m.no+" · ":"")+(m.name||"(이름 없음)"))+'</div><div class="sub">'+esc(m.date||"")+' · 사진 '+m.ph+'/10'+(m.sc!==null&&m.sc!==undefined?' · '+m.sc.toFixed(2)+'점 '+esc(m.st):' · 미평가')+'</div></div><div class="row"><button class="b" data-o="'+m.id+'">열기</button><button class="b" data-cp="'+m.id+'">복제</button><button class="b" data-pf="'+m.id+'">PDF</button><button class="b" data-hf="'+m.id+'">HWPX</button><button class="b" data-dl="'+m.id+'">삭제</button></div></div>'}).join(""):'<div class="c sub">저장된 건물이 없습니다. “＋ 새 건물”을 눌러 시작하세요.</div>';
- view("list");window.scrollTo(0,0);stgInfo(a.length)}
+async function showList(){await flush();S=null;BK=null;LP={};ALLP=null;LH={};ALLH=null;$("allh").textContent="전체 HWPX 만들기";$("allb").textContent="전체 PDF 만들기";$("expb").textContent="전체 백업 만들기";var a=await dbAll();a.sort(function(x,y){return y.upd-x.upd});var tot=a.length,pj=[];a.forEach(function(m){var p=m.proj||"";if(pj.indexOf(p)<0)pj.push(p)});var hasP=pj.some(Boolean);$("pfw").style.display=hasP?"":"none";
+ if(hasP){if(PFV!=="__all__"&&pj.indexOf(PFV)<0)PFV="__all__";$("pf").innerHTML='<option value="__all__">전체 프로젝트</option>'+pj.sort().map(function(p){return'<option value="'+esc(p)+'">'+esc(p||"(프로젝트 없음)")+'</option>'}).join("");$("pf").value=PFV}else PFV="__all__";
+ a=a.filter(pfm);
+ $("lst").innerHTML=a.length?a.map(function(m){return'<div class="c"><div data-o="'+m.id+'" style="cursor:pointer"><div class="it">'+esc((m.no?m.no+" · ":"")+(m.name||"(이름 없음)"))+'</div><div class="sub">'+esc((m.proj?m.proj+" · ":"")+(m.date||""))+' · 사진 '+m.ph+'/12'+(m.sc!==null&&m.sc!==undefined?' · '+m.sc.toFixed(2)+'점 '+esc(m.st):' · 미평가')+'</div></div><div class="row"><button class="b" data-o="'+m.id+'">열기</button><button class="b" data-cp="'+m.id+'">복제</button><button class="b" data-pf="'+m.id+'">PDF</button><button class="b" data-hf="'+m.id+'">HWPX</button><button class="b" data-dl="'+m.id+'">삭제</button></div></div>'}).join(""):'<div class="c sub">저장된 건물이 없습니다. “＋ 새 건물”을 눌러 시작하세요.</div>';
+ view("list");window.scrollTo(0,0);stgInfo(tot)}
 function openS(s){S=fixS(s);PDF=null;$("pdfb").textContent="PDF 만들기";renderInfo();renderItems();renderRes();$("sum").value=S.sum;$("sumsel").selectedIndex=0;$("t1").value=S.t1;$("t2").value=S.t2;$("ttl").textContent=ttl();view("edit");window.scrollTo(0,0)}
 async function openB(id){var r=await dbGet(id);if(r)openS(r)}
 function dl(b,n){var u=URL.createObjectURL(b),a=document.createElement("a");a.href=u;a.download=n;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(u)},5000)}
@@ -208,9 +214,55 @@ function stgInfo(n){if(n!==undefined)SN=n;var el=$("stg");if(!navigator.storage|
   var t="건물 "+SN+"건 · 사용 "+mb(u)+"MB"+(q?" / 허용 약 "+mb(q)+"MB ("+(pc<0.1?"0.1% 미만":pc.toFixed(1)+"%")+")":"");el.textContent=t;
   if(navigator.storage.persisted)navigator.storage.persisted().then(function(p){el.textContent=t+" · 자동 삭제 방지: "+(p?"설정됨":"설정 안 됨")})
  }).catch(function(){el.textContent="건물 "+SN+"건 · 저장 공간 정보를 읽지 못했습니다."})}
+var PFV="__all__";
+function pfm(m){return PFV==="__all__"||(m.proj||"")===PFV}
+var HDR={proj:["프로젝트명","프로젝트","과업명","사업명","용역명"],chap:["보고서장번호","장번호","보고서장"],no:["건물번호","번호","동번호","no"],name:["건물명","시설물명","명칭","동명","건물"],area:["구분연면적","구분","연면적","면적"],struct:["구조형식","구조"],mgr:["관리주체","관리자"],tel:["관리주체연락처","관리연락처","연락처"],addr:["주소","소재지"],date:["조사일시","조사일","조사일자","조사날짜"],en:["책임기술자성명","책임기술자","성명","기술자"],eo:["책임기술자소속","소속"],et:["책임기술자연락처","기술자연락처"]};
+function hk(s){return String(s==null?"":s).replace(/[\s()（）\[\]·_\-\/.]/g,"").toLowerCase()}
+function mapHdr(row){var m={};row.forEach(function(c,i){var k=hk(c);if(!k)return;for(var f in HDR){if(HDR[f].indexOf(k)>=0){if(m[f]!==undefined){if(f==="tel"&&m.et===undefined)m.et=i}else m[f]=i;break}}});return m}
+function nd(v){var s=String(v==null?"":v).trim();if(!s)return"";if(/^\d{5}(\.\d+)?$/.test(s)){var d=new Date(Math.round((parseFloat(s)-25569)*86400000));return d.getUTCFullYear()+"."+("0"+(d.getUTCMonth()+1)).slice(-2)+"."+("0"+d.getUTCDate()).slice(-2)}return s.replace(/\s/g,"").replace(/[-\/]/g,".").replace(/\.$/,"")}
+function nst(v){var s=String(v==null?"":v).trim(),k=s.replace(/[\s&·+,\/]/g,"").toLowerCase();if(!k)return"";if(/^(rc|철근콘크리트(구조|조)?)$/.test(k))return"철근콘크리트구조";if(/^(s|steel|철골(구조|조)?)$/.test(k))return"철골구조";if(/^(src|철골철근콘크리트(구조|조)?|철골및철근콘크리트(구조|조)?)$/.test(k))return"철골&철근콘크리트구조";return s}
+function csvRows(t){if(t.charCodeAt(0)===0xFEFF)t=t.slice(1);var d=t.split("\n")[0].indexOf("\t")>=0?"\t":",",rows=[],row=[],f="",q=false;
+ for(var i=0;i<t.length;i++){var c=t[i];if(q){if(c==='"'){if(t[i+1]==='"'){f+='"';i++}else q=false}else f+=c}else if(c==='"')q=true;else if(c===d){row.push(f);f=""}else if(c==="\n"){row.push(f);rows.push(row);row=[];f=""}else if(c!=="\r")f+=c}
+ if(f!==""||row.length){row.push(f);rows.push(row)}return rows}
+async function inflR(u8){var ds=new DecompressionStream("deflate-raw"),w=ds.writable.getWriter();w.write(u8);w.close();return new Uint8Array(await new Response(ds.readable).arrayBuffer())}
+async function xlsxRows(buf){if(typeof DecompressionStream==="undefined")throw new Error("이 브라우저는 엑셀 파일(.xlsx)을 직접 읽지 못합니다. 엑셀에서 ‘CSV’로 저장해 불러와 주세요.");
+ var u=new Uint8Array(buf),dv=new DataView(buf),e=u.length-22;while(e>=0&&dv.getUint32(e,true)!==0x06054b50)e--;if(e<0)throw new Error("올바른 엑셀(.xlsx) 파일이 아닙니다.");
+ var n=dv.getUint16(e+10,true),p=dv.getUint32(e+16,true),F={},dec=new TextDecoder();
+ for(var i=0;i<n;i++){var nl=dv.getUint16(p+28,true),el=dv.getUint16(p+30,true),cl=dv.getUint16(p+32,true),me=dv.getUint16(p+10,true),cs=dv.getUint32(p+20,true),lo=dv.getUint32(p+42,true),nm=dec.decode(u.subarray(p+46,p+46+nl)),ln=dv.getUint16(lo+26,true),le=dv.getUint16(lo+28,true);F[nm]={me:me,d:u.subarray(lo+30+ln+le,lo+30+ln+le+cs)};p+=46+nl+el+cl}
+ async function get(nm){var f=F[nm];if(!f)return null;return dec.decode(f.me===0?f.d:await inflR(f.d))}
+ var X=function(s){return new DOMParser().parseFromString(s,"application/xml")};
+ var sst=[],ss=await get("xl/sharedStrings.xml");if(ss){var sd=X(ss).getElementsByTagName("si");for(var a=0;a<sd.length;a++){var ts=sd[a].getElementsByTagName("t"),tx="";for(var b=0;b<ts.length;b++)tx+=ts[b].textContent;sst.push(tx)}}
+ var path="xl/worksheets/sheet1.xml",wb=await get("xl/workbook.xml"),rl=await get("xl/_rels/workbook.xml.rels");
+ if(wb&&rl){var sh=X(wb).getElementsByTagName("sheet")[0];if(sh){var rid=sh.getAttribute("r:id")||sh.getAttributeNS("http://schemas.openxmlformats.org/officeDocument/2006/relationships","id"),rs=X(rl).getElementsByTagName("Relationship");for(var r=0;r<rs.length;r++)if(rs[r].getAttribute("Id")===rid){var tg=rs[r].getAttribute("Target");path=tg.charAt(0)==="/"?tg.slice(1):"xl/"+tg}}}
+ var sx=await get(path);if(!sx)throw new Error("시트를 읽지 못했습니다.");
+ var rows=[],rw=X(sx).getElementsByTagName("row");
+ for(var ri=0;ri<rw.length;ri++){var cells=rw[ri].getElementsByTagName("c"),row=[];for(var ci=0;ci<cells.length;ci++){var c=cells[ci],ref=c.getAttribute("r")||"",col=0,mm=/^[A-Z]+/.exec(ref);if(mm){for(var k=0;k<mm[0].length;k++)col=col*26+mm[0].charCodeAt(k)-64;col--}else col=row.length;
+  var t=c.getAttribute("t"),v=c.getElementsByTagName("v")[0],val="";if(t==="s"&&v)val=sst[+v.textContent]||"";else if(t==="inlineStr"){var is=c.getElementsByTagName("t");for(var q=0;q<is.length;q++)val+=is[q].textContent}else if(v)val=v.textContent;
+  while(row.length<col)row.push("");row[col]=val}rows.push(row)}
+ return rows}
+async function readTable(f){var buf=await f.arrayBuffer();if(/\.xlsx$/i.test(f.name))return await xlsxRows(buf);var u=new Uint8Array(buf),t;try{t=new TextDecoder("utf-8",{fatal:true}).decode(u)}catch(e){t=new TextDecoder("euc-kr").decode(u)}return csvRows(t)}
+async function importRows(rows,projOv){var hi=-1,m={};for(var i=0;i<Math.min(rows.length,15);i++){var mm=mapHdr(rows[i]);if(mm.name!==undefined){hi=i;m=mm;break}}
+ if(hi<0)throw new Error("머리글에서 ‘건물명’ 열을 찾지 못했습니다. 양식의 첫 줄(머리글)을 그대로 두세요.");
+ var all=await dbAll(),recs=[];for(var i2=0;i2<all.length;i2++){var r0=await dbGet(all[i2].id);if(r0)recs.push(r0)}
+ var nN=0,nU=0,nS=0,keep=S;
+ for(var ri=hi+1;ri<rows.length;ri++){var row=rows[ri];if(!row.some(function(c){return String(c==null?"":c).trim()}))continue;
+  var g=function(f){return m[f]===undefined?"":String(row[m[f]]==null?"":row[m[f]]).trim()};
+  var f={proj:projOv||g("proj"),chap:g("chap"),no:g("no").replace(/\.0+$/,""),name:g("name"),area:g("area"),struct:nst(g("struct")),mgr:g("mgr"),tel:g("tel"),addr:g("addr"),date:nd(g("date")),en:g("en"),eo:g("eo"),et:g("et")};
+  if(!f.name){nS++;continue}if(/^[\d,]+(\.\d+)?$/.test(f.area))f.area+="㎡";
+  var ex=recs.filter(function(r){var I=r.info||{};return(I.proj||"")===(f.proj||"")&&(f.no?String(I.no||"")===f.no:(I.name||"")===f.name)})[0],rec;
+  if(ex){rec=ex;nU++}else{rec=blank();rec.id=nid();recs.push(rec);nN++}
+  fixS(rec);Object.keys(f).forEach(function(k){if(f[k]!=="")rec.info[k]=f[k]});
+  S=rec;dirty=true;await flush()}
+ S=keep;return{n:nN,u:nU,s:nS}}
 function initOnce(){fillSum();
+ $("pf").onchange=function(){PFV=this.value;showList()};
+ $("tplb").onclick=function(){var h=["프로젝트명","보고서 장 번호","건물번호","건물명","구분(연면적)","구조형식","관리주체","관리주체 연락처","주소","조사일시","책임기술자 성명","책임기술자 소속","책임기술자 연락처"],ex=["○○시 3종시설물 실태조사","5.5","1","A동","6559.65㎡","철근콘크리트구조","○○ 시설부","000-000-0000","○○시 ○○로 1","2026.10.19","홍길동","○○엔지니어링","010-0000-0000"];
+  var csv="\uFEFF"+[h,ex].map(function(r){return r.map(function(c){return'"'+c.replace(/"/g,'""')+'"'}).join(",")}).join("\r\n");dl(new Blob([csv],{type:"text/csv"}),"건물목록_양식.csv")};
+ $("impx").onchange=async function(){var f=this.files[0];this.value="";if(!f)return;var xm=$("xmsg");xm.textContent="읽는 중…";
+  try{var r=await importRows(await readTable(f),$("impproj").value.trim());xm.textContent="새로 "+r.n+"건 추가, "+r.u+"건 정보 갱신"+(r.s?", "+r.s+"건 건너뜀(건물명 없음)":"")+".";await showList()}
+  catch(e){xm.textContent="불러오기 실패: "+e.message}};
  $("allh").onclick=async function(){var b=$("allh");if(ALLH){sendFile(ALLH);return}
-  var a=await dbAll();if(!a.length){$("bmsg").textContent="저장된 건물이 없습니다.";return}
+  var a=(await dbAll()).filter(pfm);if(!a.length){$("bmsg").textContent="저장된 건물이 없습니다.";return}
   var nk=function(m){var n=parseFloat(m.no);return isNaN(n)?1e9:n};a.sort(function(x,y){return nk(x)-nk(y)||String(x.name).localeCompare(String(y.name))});
   b.disabled=true;var rs=[];
   try{for(var i=0;i<a.length;i++){b.textContent="준비 중… ("+(i+1)+"/"+a.length+")";var r=await dbGet(a[i].id);if(r)rs.push(r)}
@@ -220,7 +272,7 @@ function initOnce(){fillSum();
  $("hwb").onclick=async function(){var b=$("hwb");if(HX){sendFile(HX);return}b.textContent="만드는 중…";b.disabled=true;
   try{var bl=await buildHwpx([S]);HX={blob:bl,name:hn(S),url:""};b.textContent="HWPX 열기·공유"}catch(e){alert("HWPX 생성 중 오류가 발생했습니다: "+e.message);b.textContent="HWPX 만들기"}b.disabled=false};
  $("allb").onclick=async function(){var b=$("allb");if(ALLP){sendPdf(ALLP);return}
-  var a=await dbAll();if(!a.length){$("bmsg").textContent="저장된 건물이 없습니다.";return}
+  var a=(await dbAll()).filter(pfm);if(!a.length){$("bmsg").textContent="저장된 건물이 없습니다.";return}
   if(a.length>15&&!confirm("건물이 "+a.length+"건입니다. 한 번에 만들면 시간이 오래 걸리고 폰 메모리가 부족할 수 있습니다. 계속할까요?"))return;
   var nk=function(m){var n=parseFloat(m.no);return isNaN(n)?1e9:n};a.sort(function(x,y){return nk(x)-nk(y)||String(x.name).localeCompare(String(y.name))});
   b.disabled=true;var pages=[];
@@ -231,7 +283,7 @@ function initOnce(){fillSum();
  $("perb").onclick=function(){if(!navigator.storage||!navigator.storage.persist){alert("이 브라우저는 지원하지 않습니다. 백업을 자주 해 주세요.");return}navigator.storage.persist().then(function(r){alert(r?"삭제 방지가 설정되었습니다.":"브라우저가 허용하지 않았습니다. 백업을 자주 해 주세요.");stgInfo()})};
  $("albm").onchange=async function(){var fs=Array.prototype.slice.call(this.files);this.value="";var n=0,skip=0;
   for(var i=0;i<fs.length;i++){var k=S.ph.indexOf(null);if(k<0){skip=fs.length-i;break}var u=await shr(fs[i]);S.ph[k]={d:u,date:fdate(fs[i])};n++}
-  save();renderSlots();if(skip)alert("빈 칸이 부족해서 "+skip+"장은 넣지 못했습니다. (사진대지는 최대 10칸)")};
+  save();renderSlots();if(skip)alert("빈 칸이 부족해서 "+skip+"장은 넣지 못했습니다. (사진대지는 최대 12칸)")};
  $("sum").oninput=function(){S.sum=this.value;save()};
  $("t1").oninput=function(){S.t1=+this.value;save();renderRes()};$("t2").oninput=function(){S.t2=+this.value;save();renderRes()};
  $("back").onclick=function(){showList()};
@@ -262,14 +314,14 @@ var NT=["건축물 전경","지반침하 조사","육안조사 현황"];
 function td(){var d=new Date();return d.getFullYear()+". "+("0"+(d.getMonth()+1)).slice(-2)+". "+("0"+d.getDate()).slice(-2)}
 function fdate(f){var d=f.lastModified?new Date(f.lastModified):null;if(!d||isNaN(d)||d>new Date())return td();return d.getFullYear()+". "+("0"+(d.getMonth()+1)).slice(-2)+". "+("0"+d.getDate()).slice(-2)}
 function shr(f){return new Promise(function(r){shrink(f,r)})}
-function renderSlots(){var h="";for(var n=0;n<10;n++){var p=S.ph[n];
+function renderSlots(){var h="";for(var n=0;n<12;n++){var p=S.ph[n];
  h+='<figure><label class="slot"><input type="file" accept="image/*" capture="environment" data-s="'+n+'"><b>사진대지-'+(n+1)+'</b><div class="thumb">'+(p?'<img src="'+p.d+'" alt="사진대지-'+(n+1)+'">':'📷 눌러서 촬영')+'</div></label>';
  h+='<label class="b" style="display:block;margin-top:4px;padding:5px;font-size:12px;cursor:pointer">🖼 앨범에서 선택<input type="file" accept="image/*" data-a="'+n+'" style="display:none"></label>';
  h+='<label>촬영일자</label><input data-sk="'+n+'" value="'+(p?esc(p.date):"")+'" placeholder="촬영 시 자동 입력"'+(p?'':' disabled')+'>';
  h+='<label>과업명</label><div>3종 시설물 실태조사</div>';
  h+='<label>촬영내용</label><select data-sn="'+n+'"><option value="">선택</option>'+NT.map(function(t){return'<option'+(S.nt[n]===t?' selected':'')+'>'+t+'</option>'}).join("")+'</select>';
  h+=(p?'<button class="b" data-sdel="'+n+'" style="margin-top:6px;padding:4px">사진 삭제</button>':'')+'</figure>'}
- $("sheet").innerHTML=h;$("sheetinfo").textContent="촬영 "+S.ph.filter(Boolean).length+" / 10 · 칸을 누르면 촬영, 다시 누르면 재촬영";
+ $("sheet").innerHTML=h;$("sheetinfo").textContent="촬영 "+S.ph.filter(Boolean).length+" / 12 · 칸을 누르면 촬영, 다시 누르면 재촬영";
  $("sheet").onchange=function(e){var d=e.target.dataset;
   if(d.sn!==undefined){S.nt[+d.sn]=e.target.value;save();return}
   var ix=d.s!==undefined?d.s:d.a,fl=e.target.files[0];if(ix===undefined||!fl)return;
