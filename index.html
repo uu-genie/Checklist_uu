@@ -97,7 +97,7 @@ select{width:100%;font:inherit;font-size:12px;color:var(--tx);background:var(--b
 <span>종합점수</span><span class="sc" id="score">–</span>
 <span>안전상태</span><span><span class="st" id="state">–</span></span>
 </div>
-<div class="sub" id="basis" style="margin-top:6px"></div>
+<div class="sub" id="basis" style="margin-top:6px"></div><div class="sub" id="miss" style="margin-top:8px"></div>
 <div id="opts"></div>
 <label style="margin-top:8px">종합의견 및 특기사항</label><select id="sumsel"></select><textarea id="sum" style="margin-top:6px"></textarea>
 <details class="noprint" style="margin-top:8px"><summary class="sub">안전상태 판정 기준 (변경 가능)</summary>
@@ -195,17 +195,33 @@ function dbGet(id){if(LS){var v=localStorage.getItem("chk3b_"+id);return Promise
 function dbPut(r,m){if(LS){try{localStorage.setItem("chk3b_"+r.id,JSON.stringify(r));var a=lsi().filter(function(x){return x.id!==r.id});a.push(m);localStorage.setItem("chk3i",JSON.stringify(a));return Promise.resolve()}catch(e){return Promise.reject(e)}}return tx(["b","i"],"readwrite",function(t){t.objectStore("b").put(r);t.objectStore("i").put(m)})}
 function dbDel(id){if(LS){localStorage.removeItem("chk3b_"+id);localStorage.setItem("chk3i",JSON.stringify(lsi().filter(function(x){return x.id!==id})));return Promise.resolve()}return tx(["b","i"],"readwrite",function(t){t.objectStore("b").delete(id);t.objectStore("i").delete(id)})}
 function ttl(){var I=S.info;return(I.no?I.no+" · ":"")+(I.name||"새 건물")}
-function summ(){var sc=calc(),I=S.info;return{id:S.id,proj:I.proj||"",name:I.name||"",no:I.no||"",date:I.date||"",ph:S.ph.filter(Boolean).length,sc:sc===null?null:+sc.toFixed(2),st:sc===null?"":stateOf(sc)[0],upd:Date.now()}}
+function summOf(r){var k=S;S=r;try{var sc=calc(),I=r.info||{};return{id:r.id,proj:I.proj||"",name:I.name||"",no:I.no||"",date:I.date||"",ph:(r.ph||[]).filter(Boolean).length,ev:(r.it||[]).filter(function(x){return x.g!==null&&x.g!==undefined}).length,sc:sc===null?null:+sc.toFixed(2),st:sc===null?"":stateOf(sc)[0],upd:Date.now()}}finally{S=k}}
+function summ(){return summOf(S)}
+function dbSum(m){if(LS){var a=lsi().filter(function(x){return x.id!==m.id});a.push(m);localStorage.setItem("chk3i",JSON.stringify(a));return Promise.resolve()}return tx(["i"],"readwrite",function(t){t.objectStore("i").put(m)})}
+function missOf(r){var o=[],I=r.info||{},ev=[],ph=r.ph||[],nt=r.nt||[],nn=[];if(!I.name)o.push("건물명이 비어 있음");
+ (r.it||[]).forEach(function(x,i){if(x.g===null||x.g===undefined)ev.push(i+1)});if(ev.length)o.push("평가 안 한 항목: "+ev.join(", ")+"번");
+ ph.forEach(function(p,k){if(p&&!nt[k])nn.push(k+1)});if(!ph.filter(Boolean).length)o.push("사진대지에 사진이 없음");else if(nn.length)o.push("촬영내용 미선택: 사진대지-"+nn.join(", "));
+ if(!(r.sum||"").trim())o.push("종합의견이 비어 있음");return o}
+function missBrief(r){var I=r.info||{},o=[],ev=(r.it||[]).filter(function(x){return x.g===null||x.g===undefined}).length,ph=r.ph||[],nt=r.nt||[],nn=0;
+ ph.forEach(function(p,k){if(p&&!nt[k])nn++});if(ev)o.push("평가 "+ev+"개 남음");if(!ph.filter(Boolean).length)o.push("사진 없음");else if(nn)o.push("촬영내용 "+nn+"칸");if(!(r.sum||"").trim())o.push("종합의견 없음");return o.join(", ")}
+function okMake(r){var m=missOf(r);return!m.length||confirm("‘"+((r.info||{}).name||"이 건물")+"’에 확인할 항목이 있습니다.\n\n· "+m.join("\n· ")+"\n\n그래도 만들까요?")}
+async function okAll(a){var L=[];for(var i=0;i<a.length;i++){var r=await dbGet(a[i].id);if(!r)continue;var b=missBrief(r)+((r.info||{}).name?"":((missBrief(r)?", ":"")+"건물명 없음"));if(b)L.push("· "+((r.info.no?r.info.no+" ":"")+(r.info.name||"(이름 없음)"))+" : "+b)}
+ if(!L.length)return true;return confirm("확인할 항목이 있는 건물이 "+L.length+"건 있습니다.\n\n"+L.slice(0,8).join("\n")+(L.length>8?"\n… 외 "+(L.length-8)+"건":"")+"\n\n그래도 만들까요?")}
+function renderMiss(){var el=$("miss");if(!el||!S)return;var m=missOf(S);el.innerHTML=m.length?'<b style="color:var(--warn)">확인할 항목</b><br>· '+m.map(esc).join("<br>· "):'<b style="color:var(--ok)">✓ 빠진 항목이 없습니다</b>'}
+function cardSub(m){var p=[];if(m.proj)p.push(m.proj);if(m.date)p.push(m.date);p.push("사진 "+m.ph+"/12");
+ if(m.ev!==undefined)p.push(m.ev>=7?'<b style="color:var(--ok)">평가 완료</b>':(m.ev===0?'<b style="color:var(--warn)">미평가</b>':"평가 "+m.ev+"/7"));
+ if(m.sc!==null&&m.sc!==undefined)p.push(m.sc.toFixed(2)+"점 "+m.st);return p.map(function(x){return x.charAt(0)==="<"?x:esc(x)}).join(" · ")}
 function flush(){clearTimeout(svT);if(!S||!dirty)return Promise.resolve();dirty=false;var t=$("ttl");if(t)t.textContent=ttl();
  return dbPut(S,summ()).catch(function(e){dirty=true;alert("저장에 실패했습니다. 사진을 줄이거나 백업 후 다시 시도해 주세요. ("+(e&&e.name||e)+")")})}
-function save(){PDF=null;HX=null;var hq=$("hwb");if(hq)hq.textContent="HWPX 만들기";var pb=$("pdfb");if(pb)pb.textContent="PDF 만들기";dirty=true;clearTimeout(svT);svT=setTimeout(flush,350)}
+function save(){if(S)renderMiss();PDF=null;HX=null;var hq=$("hwb");if(hq)hq.textContent="HWPX 만들기";var pb=$("pdfb");if(pb)pb.textContent="PDF 만들기";dirty=true;clearTimeout(svT);svT=setTimeout(flush,350)}
 function view(v){$("list").style.display=v==="list"?"":"none";$("edit").style.display=v==="edit"?"":"none";$("bar").style.display=v==="edit"?"":"none"}
-async function showList(){await flush();S=null;BK=null;LP={};ALLP=null;LH={};ALLH=null;$("allh").textContent="전체 HWPX 만들기";$("allb").textContent="전체 PDF 만들기";$("expb").textContent="전체 백업 만들기";var a=await dbAll();a.sort(function(x,y){return y.upd-x.upd});var tot=a.length,pj=[];a.forEach(function(m){var p=m.proj||"";if(pj.indexOf(p)<0)pj.push(p)});var hasP=pj.some(Boolean);$("pfw").style.display=hasP?"":"none";
+async function showList(){await flush();S=null;BK=null;LP={};ALLP=null;LH={};ALLH=null;$("allh").textContent="전체 HWPX 만들기";$("allb").textContent="전체 PDF 만들기";$("expb").textContent="전체 백업 만들기";var a=await dbAll();for(var bi=0;bi<a.length;bi++){if(a[bi].ev===undefined){var br=await dbGet(a[bi].id);if(br){var sm=summOf(br);sm.upd=a[bi].upd;await dbSum(sm);a[bi]=sm}}}
+ a.sort(function(x,y){return y.upd-x.upd});var tot=a.length,pj=[];a.forEach(function(m){var p=m.proj||"";if(pj.indexOf(p)<0)pj.push(p)});var hasP=pj.some(Boolean);$("pfw").style.display=hasP?"":"none";
  if(hasP){if(PFV!=="__all__"&&pj.indexOf(PFV)<0)PFV="__all__";$("pf").innerHTML='<option value="__all__">전체 프로젝트</option>'+pj.sort().map(function(p){return'<option value="'+esc(p)+'">'+esc(p||"(프로젝트 없음)")+'</option>'}).join("");$("pf").value=PFV}else PFV="__all__";
  a=a.filter(pfm);
- $("lst").innerHTML=a.length?a.map(function(m){return'<div class="c"><div data-o="'+m.id+'" style="cursor:pointer"><div class="it">'+esc((m.no?m.no+" · ":"")+(m.name||"(이름 없음)"))+'</div><div class="sub">'+esc((m.proj?m.proj+" · ":"")+(m.date||""))+' · 사진 '+m.ph+'/12'+(m.sc!==null&&m.sc!==undefined?' · '+m.sc.toFixed(2)+'점 '+esc(m.st):' · 미평가')+'</div></div><div class="row"><button class="b" data-o="'+m.id+'">열기</button><button class="b" data-cp="'+m.id+'">복제</button><button class="b" data-pf="'+m.id+'">PDF</button><button class="b" data-hf="'+m.id+'">HWPX</button><button class="b" data-dl="'+m.id+'">삭제</button></div></div>'}).join(""):'<div class="c sub">저장된 건물이 없습니다. “＋ 새 건물”을 눌러 시작하세요.</div>';
+ $("lst").innerHTML=a.length?a.map(function(m){return'<div class="c"><div data-o="'+m.id+'" style="cursor:pointer"><div class="it">'+esc((m.no?m.no+" · ":"")+(m.name||"(이름 없음)"))+'</div><div class="sub">'+cardSub(m)+'</div></div><div class="row"><button class="b" data-o="'+m.id+'">열기</button><button class="b" data-cp="'+m.id+'">복제</button><button class="b" data-pf="'+m.id+'">PDF</button><button class="b" data-hf="'+m.id+'">HWPX</button><button class="b" data-dl="'+m.id+'">삭제</button></div></div>'}).join(""):'<div class="c sub">저장된 건물이 없습니다. “＋ 새 건물”을 눌러 시작하세요.</div>';
  view("list");window.scrollTo(0,0);stgInfo(tot)}
-function openS(s){S=fixS(s);PDF=null;$("pdfb").textContent="PDF 만들기";renderInfo();renderItems();renderRes();$("sum").value=S.sum;$("sumsel").selectedIndex=0;$("t1").value=S.t1;$("t2").value=S.t2;$("ttl").textContent=ttl();view("edit");window.scrollTo(0,0)}
+function openS(s){S=fixS(s);PDF=null;$("pdfb").textContent="PDF 만들기";renderInfo();renderItems();renderRes();renderMiss();$("sum").value=S.sum;$("sumsel").selectedIndex=0;$("t1").value=S.t1;$("t2").value=S.t2;$("ttl").textContent=ttl();view("edit");window.scrollTo(0,0)}
 async function openB(id){var r=await dbGet(id);if(r)openS(r)}
 function dl(b,n){var u=URL.createObjectURL(b),a=document.createElement("a");a.href=u;a.download=n;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(u)},5000)}
 var SN=0;
@@ -264,18 +280,18 @@ function initOnce(){fillSum();
  $("allh").onclick=async function(){var b=$("allh");if(ALLH){sendFile(ALLH);return}
   var a=(await dbAll()).filter(pfm);if(!a.length){$("bmsg").textContent="저장된 건물이 없습니다.";return}
   var nk=function(m){var n=parseFloat(m.no);return isNaN(n)?1e9:n};a.sort(function(x,y){return nk(x)-nk(y)||String(x.name).localeCompare(String(y.name))});
-  b.disabled=true;var rs=[];
+  if(!(await okAll(a)))return;b.disabled=true;var rs=[];
   try{for(var i=0;i<a.length;i++){b.textContent="준비 중… ("+(i+1)+"/"+a.length+")";var r=await dbGet(a[i].id);if(r)rs.push(r)}
    b.textContent="만드는 중…";var bl=await buildHwpx(rs);ALLH={blob:bl,name:"실태조사_전체_"+td().replace(/\D/g,"")+".hwpx",url:""};b.textContent="전체 HWPX 열기·공유 ("+a.length+"건)"}
   catch(e){alert("HWPX 생성 중 오류가 발생했습니다: "+e.message);b.textContent="전체 HWPX 만들기"}
   b.disabled=false};
- $("hwb").onclick=async function(){var b=$("hwb");if(HX){sendFile(HX);return}b.textContent="만드는 중…";b.disabled=true;
+ $("hwb").onclick=async function(){var b=$("hwb");if(HX){sendFile(HX);return}if(!okMake(S))return;b.textContent="만드는 중…";b.disabled=true;
   try{var bl=await buildHwpx([S]);HX={blob:bl,name:hn(S),url:""};b.textContent="HWPX 열기·공유"}catch(e){alert("HWPX 생성 중 오류가 발생했습니다: "+e.message);b.textContent="HWPX 만들기"}b.disabled=false};
  $("allb").onclick=async function(){var b=$("allb");if(ALLP){sendPdf(ALLP);return}
   var a=(await dbAll()).filter(pfm);if(!a.length){$("bmsg").textContent="저장된 건물이 없습니다.";return}
   if(a.length>15&&!confirm("건물이 "+a.length+"건입니다. 한 번에 만들면 시간이 오래 걸리고 폰 메모리가 부족할 수 있습니다. 계속할까요?"))return;
   var nk=function(m){var n=parseFloat(m.no);return isNaN(n)?1e9:n};a.sort(function(x,y){return nk(x)-nk(y)||String(x.name).localeCompare(String(y.name))});
-  b.disabled=true;var pages=[];
+  if(!(await okAll(a)))return;b.disabled=true;var pages=[];
   try{for(var i=0;i<a.length;i++){b.textContent="만드는 중… ("+(i+1)+"/"+a.length+")";var r=await dbGet(a[i].id);if(r)pages=pages.concat(await recPages(r))}
    var blob=buildPdf(pages);ALLP={blob:blob,name:"실태조사_전체_"+td().replace(/\D/g,"")+".pdf",url:URL.createObjectURL(blob),pg:pages};b.textContent="전체 PDF 열기·공유 ("+a.length+"건)"}
   catch(e){alert("PDF 생성 중 오류가 발생했습니다: "+e.message);b.textContent="전체 PDF 만들기"}
@@ -291,10 +307,10 @@ function initOnce(){fillSum();
  $("reset").onclick=async function(){if(confirm("이 건물의 입력 내용과 사진을 모두 삭제할까요? 되돌릴 수 없습니다.")){var id=S.id;dirty=false;clearTimeout(svT);await dbDel(id);showList()}};
  $("lst").onclick=async function(e){var t=e.target.closest("[data-o],[data-cp],[data-dl],[data-pf],[data-hf]");if(!t)return;var d=t.dataset;
   if(d.o)return openB(d.o);
-  if(d.hf){if(LH[d.hf]){sendFile(LH[d.hf]);return}t.textContent="만드는 중…";t.disabled=true;
+  if(d.hf){if(LH[d.hf]){sendFile(LH[d.hf]);return}var q1=await dbGet(d.hf);if(q1&&!okMake(q1))return;t.textContent="만드는 중…";t.disabled=true;
    try{var r1=await dbGet(d.hf),hb=await buildHwpx([r1]);LH[d.hf]={blob:hb,name:hn(r1),url:""};t.textContent="HWPX 열기·공유"}catch(er){alert("HWPX 생성 중 오류가 발생했습니다: "+er.message);t.textContent="HWPX"}
    t.disabled=false;return}
-  if(d.pf){if(LP[d.pf]){sendPdf(LP[d.pf]);return}t.textContent="만드는 중…";t.disabled=true;
+  if(d.pf){if(LP[d.pf]){sendPdf(LP[d.pf]);return}var q0=await dbGet(d.pf);if(q0&&!okMake(q0))return;t.textContent="만드는 중…";t.disabled=true;
    try{var r0=await dbGet(d.pf),pg=await recPages(r0),bl=buildPdf(pg);LP[d.pf]={blob:bl,name:pn(r0),url:URL.createObjectURL(bl),pg:pg};t.textContent="PDF 열기·공유"}catch(er){alert("PDF 생성 중 오류가 발생했습니다: "+er.message);t.textContent="PDF"}
    t.disabled=false;return}
   if(d.cp){var r=await dbGet(d.cp);if(!r)return;var n=blank();["chap","date","mgr","tel","addr","en","eo","et"].forEach(function(k){if(r.info[k])n.info[k]=r.info[k]});n.t1=r.t1;n.t2=r.t2;n.id=nid();return openS(n)}
@@ -394,7 +410,7 @@ async function recPages(rec){var keep=S;S=fixS(rec);try{var pg=[],m=mkc(),f=1;wh
   await Promise.all(list.map(function(e){return new Promise(function(r){var im=new Image();im.onload=function(){e.im=im;r()};im.onerror=r;im.src=e.p.d})}));
   for(var a=0;a<list.length;a+=6){var m2=mkc();pp(m2[1],C,list.slice(a,a+6));pg.push(m2[0].toDataURL("image/jpeg",.92))}
   return pg}finally{S=keep}}
-async function makePdf(){var b=$("pdfb");b.textContent="만드는 중…";b.disabled=true;
+async function makePdf(){if(!okMake(S))return;var b=$("pdfb");b.textContent="만드는 중…";b.disabled=true;
  try{var pg=await recPages(S),blob=buildPdf(pg);if(PDF&&PDF.url)URL.revokeObjectURL(PDF.url);PDF={blob:blob,name:pn(S),url:URL.createObjectURL(blob),pg:pg};b.textContent="PDF 열기·공유"}
  catch(e){alert("PDF 생성 중 오류가 발생했습니다: "+e.message);b.textContent="PDF 만들기"}
  b.disabled=false}
